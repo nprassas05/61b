@@ -10,11 +10,11 @@ public class IntList {
     /**
      * First element of list.
      */
-    public int head;
+    private int head;
     /**
      * Remaining elements of list.
      */
-    public IntList tail;
+    private IntList tail;
 
     /**
      * A List with head HEAD0 and tail TAIL0.
@@ -166,6 +166,35 @@ public class IntList {
     }
 
     /**
+     * Returns the reverse of the given IntList.
+     * This method is destructive. If given null
+     * as an input, returns null.
+     */
+    public static IntList reverse(IntList A) {
+        if (A == null) {
+            return null;
+        } else if (A.tail == null) {
+            return A;
+        } else {
+            IntList p0 = A;
+            IntList p1 = A.tail;
+            IntList p2 = p1;
+
+            while (p1.tail != null) {
+                p2 = p2.tail;
+                p1.tail = p0;
+                p0 = p1;
+                p1 = p2;
+            }
+
+            p1.tail = p0;
+            A.tail = null;
+            return p1;
+        }
+
+    }
+
+    /**
      * If a cycle exists in the IntList, this method
      * returns an integer equal to the item number of the location where the
      * cycle is detected.
@@ -181,26 +210,30 @@ public class IntList {
         IntList tortoise = A;
         IntList hare = A;
 
-        if (A == null)
+        if (A == null) {
             return 0;
+        }
 
         int cnt = 0;
 
 
         while (true) {
             cnt++;
-            if (hare.tail != null)
+            if (hare.tail != null) {
                 hare = hare.tail.tail;
-            else
+            } else {
                 return 0;
+            }
 
             tortoise = tortoise.tail;
 
-            if (tortoise == null || hare == null)
+            if (tortoise == null || hare == null) {
                 return 0;
+            }
 
-            if (hare == tortoise)
+            if (hare == tortoise) {
                 return cnt;
+            }
         }
     }
 

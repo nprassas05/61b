@@ -1,5 +1,5 @@
 /** Performs some basic linked list tests. */
-public class LinkedListDequeTest {
+public class ArrayDequeTest {
 	
 	/* Utility method for printing out empty checks. */
 	public static boolean checkEmpty(boolean expected, boolean actual) {
@@ -36,7 +36,7 @@ public class LinkedListDequeTest {
 	public static void addIsEmptySizeTest() {
 		System.out.println("Running add/isEmpty/Size test.");
 		
-		LinkedListDeque<String> lld1 = new LinkedListDeque<String>();
+		ArrayDeque<String> lld1 = new ArrayDeque<String>();
 
 		boolean passed = checkEmpty(true, lld1.isEmpty());
 
@@ -61,7 +61,7 @@ public class LinkedListDequeTest {
 
 		System.out.println("Running add/remove test.");
 		
-		LinkedListDeque<Integer> lld1 = new LinkedListDeque<Integer>();
+		ArrayDeque<Integer> lld1 = new ArrayDeque<Integer>();
 		// should be empty 
 		boolean passed = checkEmpty(true, lld1.isEmpty());
 
@@ -78,8 +78,30 @@ public class LinkedListDequeTest {
 	}
 
 	public static void main(String[] args) {
-		System.out.println("Running tests.\n");
-		addIsEmptySizeTest();
-		addRemoveTest();
+		// System.out.println("Running tests.\n");
+		// addIsEmptySizeTest();
+		// addRemoveTest();
+
+		ArrayDeque<Integer> dq = new ArrayDeque<Integer>();
+
+		for (int i = 1; i <= 25; ++i) {
+			dq.addLast(i * 10);
+		}
+		dq.printDeque();
+
+		try {
+			for (int i = 0; i < 20; ++i) {
+				dq.removeLast();
+			}
+		} catch (Exception ex) {
+			System.out.println("size: " + dq.size());
+			System.out.println("nextFirst: " + dq.nextFirst);
+			System.out.println("nextLast: " + dq.nextLast);
+			System.out.println("array length: " + dq.arrayLength());
+			ex.printStackTrace();
+		} finally {
+			dq.printDeque();
+		}
+
 	}
 } 
