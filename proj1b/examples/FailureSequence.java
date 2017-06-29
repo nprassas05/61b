@@ -9,8 +9,10 @@ import java.util.regex.Pattern;
   * might be used.
   */
 public class FailureSequence {
-
+	/* use correct version of array deque to keep track of each operation
+	   in seqeunce that led to an error */
     private ArrayDequeSolution<DequeOperation> opSequence;
+
     /* Regex black magic. */
     private static final String OP_STRING = "([a-zA-Z]+)\\(([0-9\\-]*)\\)";
     private static final Pattern OP_PATTERN = Pattern.compile(OP_STRING);
