@@ -12,7 +12,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import java.util.List;
 import java.util.LinkedList;
 
 public class Editor extends Application {
@@ -69,8 +68,6 @@ public class Editor extends Application {
                     displayText.setText(enteredText.toString());
                     keyEvent.consume();
                 }
-
-                //centerText();
             } else if (keyEvent.getEventType() == KeyEvent.KEY_PRESSED) {
                 // Arrow keys should be processed using the KEY_PRESSED event, because KEY_PRESSED
                 // events have a code that we can check (KEY_TYPED events don't have an associated
@@ -79,14 +76,12 @@ public class Editor extends Application {
                 if (code == KeyCode.UP) {
                     fontSize += 5;
                     displayText.setFont(Font.font(fontName, fontSize));
-                    //centerText();
                 } else if (code == KeyCode.DOWN) {
                     fontSize = Math.max(0, fontSize - 5);
                     displayText.setFont(Font.font(fontName, fontSize));
-                    //centerText();
                 } else if (code == KeyCode.BACK_SPACE) {
-                	enteredText.deleteCharAt(enteredText.length() - 1);
-                	displayText.setText(enteredText.toString());
+                    enteredText.deleteCharAt(enteredText.length() - 1);
+                    displayText.setText(enteredText.toString());
                 }
             }
         }
