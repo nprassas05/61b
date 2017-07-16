@@ -9,7 +9,43 @@ import static org.junit.Assert.*;
 public class TestArrayRingBuffer {
     @Test
     public void someTest() {
-        //ArrayRingBuffer arb = new ArrayRingBuffer(10);
+        ArrayRingBuffer<String> arb= new ArrayRingBuffer(10);
+        for (int i = 0; i < 10; i++) {
+        	arb.enqueue(String.valueOf(i + 1));
+        }
+
+        for (String s: arb) {
+        	System.out.print(s + " ");
+        }
+        System.out.println();
+
+        for (int i = 0; i < 5; i++) {
+        	System.out.print(arb.dequeue() + " ");
+        }
+        System.out.println();
+
+        for (String s: arb) {
+        	System.out.print(s + " ");
+        }
+        System.out.println();
+
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testB() {
+    	ArrayRingBuffer<String> arb= new ArrayRingBuffer(10);
+    	for (int i = 0; i < 3; ++i) {
+    		arb.enqueue(String.valueOf((char) ('A' + i)));
+    	}
+
+    	for (int i = 0; i < 3; ++i) {
+    		System.out.print(arb.dequeue() + " ");
+    	}
+    	System.out.println();
+
+    	/* here an exception should be thrown for trying to dequeue
+    	   from an empty buffer */
+    	arb.dequeue();
     }
 
     /** Calls tests for ArrayRingBuffer. */

@@ -1,5 +1,8 @@
 // TODO: Make sure to make this class a part of the synthesizer package
-//package <package name>;
+package synthesizer;
+
+import java.util.LinkedList;
+import java.util.Queue;
 
 //Make sure this class is public
 public class GuitarString {
@@ -18,6 +21,13 @@ public class GuitarString {
         //       cast the result of this divsion operation into an int. For better
         //       accuracy, use the Math.round() function before casting.
         //       Your buffer should be initially filled with zeros.
+        int cap = (int) Math.round(SR / frequency);
+        buffer = new ArrayRingBuffer<Double>(cap);
+
+        /* fill buffer with all zeroes */
+        for (int i = 0; i < cap; i++) {
+            buffer.enqueue(0.0);
+        }
     }
 
 
@@ -28,6 +38,24 @@ public class GuitarString {
         //       double r = Math.random() - 0.5;
         //
         //       Make sure that your random numbers are different from each other.
+        
+        int fill = buffer.fillCount();
+        Queue<Double> values = new LinkedList<>();
+        double r = Math.random() - 0.5;
+
+        while (fill > 0) {
+            while (values.contains(r)) {
+                r = Math.random() - 0.5;
+            }
+            values.offer(r);
+            buffer.dequeue();
+
+            fill -= 1;
+        }
+
+        while (values.size() > 0) {
+            buffer.enqueue(values.poll());
+        }
     }
 
     /* Advance the simulation one time step by performing one iteration of
@@ -37,11 +65,14 @@ public class GuitarString {
         // TODO: Dequeue the front sample and enqueue a new sample that is
         //       the average of the two multiplied by the DECAY factor.
         //       Do not call StdAudio.play().
+        double frontElement = buffer.dequeue();
+        double nextFrontElement = buffer.peek();
+        buffer.enqueue((frontElement + nextFrontElement) * 0.5 * DECAY);
     }
 
     /* Return the double at the front of the buffer. */
     public double sample() {
         // TODO: Return the correct thing.
-        return 0;
+        return buffer.peek();
     }
 }

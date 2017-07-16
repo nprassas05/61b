@@ -36,10 +36,18 @@ public class TestPlip {
 
     @Test
     public void testReplicate() {
+        Plip p = new Plip(2.00);
+
+        Plip p2 = p.replicate();
+
+        assertEquals(p.energy(), 1.00, 0.001);
+        assertEquals(p2.energy(), 1.00, 0.001);
+
+        assertNotSame("These guys should be different objects in memory", p, p2);
 
     }
 
-    //@Test
+    @Test
     public void testChoose() {
         Plip p = new Plip(1.2);
         HashMap<Direction, Occupant> surrounded = new HashMap<Direction, Occupant>();
@@ -56,6 +64,17 @@ public class TestPlip {
         Action expected = new Action(Action.ActionType.STAY);
 
         assertEquals(expected, actual);
+
+        // test if we have an empty space and that the Plip's energy is greater than 1.0
+        // that we choose to replicate to an empty space
+        surrounded.put(Direction.TOP, new Empty());
+        actual = p.chooseAction(surrounded);
+        expected = new Action(Action.ActionType.REPLICATE, Direction.TOP);
+        assertEquals(expected, actual);
+
+        /* test that if there is an empty space and our energy is less than 1.0,
+           that we choose to stay */
+
     }
 
     public static void main(String[] args) {
