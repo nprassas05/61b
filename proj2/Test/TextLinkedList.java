@@ -9,6 +9,7 @@ public class TextLinkedList {
 		private int yPos;
 
 		private TextNode next;
+		//what in the world
 
 		public TextNode(Text s, TextNode t) {
 			text = s;
