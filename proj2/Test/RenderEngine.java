@@ -11,9 +11,14 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.scene.shape.Rectangle;
 
-public class RenderingEngine {
-	public void renderWithLeftArrowPress() {
+public class RenderEngine {
+	public void renderAfterLeftArrow(TextLinkedList textBuffer) {
+		TextLinkedList.TextNode runnerNode = textBuffer.nodeAfterCursor();
 
+		while (runnerNode != null) {
+			runnerNode.setX(runnerNode.getX() + 1);
+			runnerNode = runnerNode.next;
+		}
 	}
 
 	public void renderWithRightArrowPress() {

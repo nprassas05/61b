@@ -1,19 +1,25 @@
 import javafx.scene.text.Text;
+import javafx.scene.shape.Rectangle;
 
 public class TextLinkedList {
 
 	/* internal linked list nodes, which will be text objects in this case */
-	private class TextNode {
+	public class TextNode {
 		private Text text;
 		private int xPos;
 		private int yPos;
 
-		private TextNode next;
-		//what in the world
+		public TextNode next;
+		public TextNode prev;
 
-		public TextNode(Text s, TextNode t) {
+		public TextNode(Text s) {
 			text = s;
-			next = t;
+		}
+
+		public TextNode(Text s, TextNode n, TextNode p) {
+			text = s;
+			next = n;
+			prev = p;
 		}
 
 		public void setX(int x) {
@@ -22,6 +28,14 @@ public class TextLinkedList {
 
 		public void setY(int y) {
 			text.setY(y);
+		}
+
+		public int getX() {
+			return (int) text.getX();
+		}
+
+		public int getY() {
+			return (int) text.getY();
 		}
 	}
 
@@ -38,21 +52,28 @@ public class TextLinkedList {
 
 	/* sentinel will initially point to null */
 	public TextLinkedList() {
-		sentinel = new TextNode(new Text("blah"), null);
+		sentinel = new TextNode(new Text("blah"), null, null);
 		nodeBeforeCursor = sentinel;
-		nodeAfterCursor = null;	
+		nodeAfterCursor = sentinel;	
 	}
 	
 	/* insert a new text object after the current cursor position */
 	public void insert(Text text) {
-		TextNode t = new TextNode(text, nodeBeforeCursor.next);
+		TextNode t = new TextNode(text, nodeBeforeCursor.next, nodeBeforeCursor);
 		t.setX(cursorXPos);
 		t.setY(cursorYPos);
 
 		cursorXPos = cursorXPos + (int) Math.round(text.getLayoutBounds().getWidth()) + 1;
 
-		nodeAfterCursor = nodeBeforeCursor.next;
+		nodeBeforeCursor.next = t;
+		nodeAfterCursor = t.next;
 		nodeBeforeCursor = t;
+
+		if (nodeAfterCursor != null) {
+			System.out.println(nodeAfterCursor.getX());
+		} else {
+			System.out.println("Insert: Still null");
+		}
 
 		// /* check if user hit carriage return to go to a new line */
 		// if (text.getText().equals("\r")) {
@@ -71,6 +92,41 @@ public class TextLinkedList {
 	public int getCursorXPos() { return cursorXPos; }
 	public int getCursorYPos() { return cursorYPos; }
 
-	/* return the node before the cursor */
+	/* get the node after the cursor */
+	public TextNode nodeAfterCursor() {
+		return nodeAfterCursor;
+	}
+
+	/* change the cursor position and cursor related nodes with each type of arrow click */
+	public void leftArrow(Rectangle cursor) {
+		cursorXPos = nodeBeforeCursor.getX();
+		nodeAfterCursor = nodeBeforeCursor;
+		nodeBeforeCursor = nodeBeforeCursor.prev;
+
+		cursor.setX(cursorXPos);
+		cursor.setY(cursorYPos);
+
+		if (nodeAfterCursor != null) {
+			System.out.println(nodeAfterCursor.getX());
+		} else {
+			System.out.println("Left Arrow: Still null");
+		}
+	}
+
+	// some sample text
+
+	public void rightArrow(Rectangle cursor) {
+		System.out.println("Before right arrow pressed: " + cursorXPos);
+		if (nodeAfterCursor.next != null) {
+			cursorXPos = nodeAfterCursor.next.getX();
+		}
+		System.out.println("After right arrow: " + cursorXPos);
+		
+		nodeBeforeCursor = nodeAfterCursor;
+		nodeAfterCursor = nodeAfterCursor.next;
+
+		cursor.setX(cursorXPos);
+		cursor.setY(cursorYPos);
+	}
 
 }

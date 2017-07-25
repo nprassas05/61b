@@ -13,7 +13,6 @@ import javafx.stage.Stage;
 import java.util.List;
 import java.util.ArrayList;
 
-
 public class DetectAndWrap extends Application {
     private static final int WINDOW_WIDTH = 500;
     private static final int WINDOW_HEIGHT = 500;

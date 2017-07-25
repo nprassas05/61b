@@ -11,7 +11,8 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.scene.shape.Rectangle;
 
-import java.util.LinkedList;
+import java.util.List;
+import java.util.ArrayList;
 
 public class Editor extends Application {
     Group root;
@@ -19,6 +20,9 @@ public class Editor extends Application {
 
     /* cursor will start at coordinates (5, 5) and have a width of 1 pixel, the 20 will change eventually */
     private final Rectangle cursor = new Rectangle(5.0, 5.0, 1, 20);
+
+    /* keep an internal text rendering engine */
+    private RenderEngine renderEngine = new RenderEngine();
 
     private static final int WINDOW_WIDTH = 500;
     private static final int WINDOW_HEIGHT = 500;
@@ -49,8 +53,9 @@ public class Editor extends Application {
                 // the KEY_TYPED event, javafx handles the "Shift" key and associated
                 // capitalization.
                 String characterTyped = keyEvent.getCharacter();
+                
                 /* check if user entered carriage return to go to new line */
-                if (characterTyped.length() > 0 && pocharacterTyped.charAt(0) == '\r') { 
+                if (characterTyped.length() > 0 && characterTyped.charAt(0) == '\r') { 
                     cursor.setY(cursor.getY() + arbitraryText.getLayoutBounds().getHeight());
                     cursor.setX(5);
                     textBuffer.setCursorCoordinates(cursor.getX(), cursor.getY());
@@ -83,6 +88,11 @@ public class Editor extends Application {
                     //displayText.setFont(Font.font(fontName, fontSize));
                 } else if (code == KeyCode.BACK_SPACE) {
 
+                } else if (code == KeyCode.LEFT) {
+                    textBuffer.leftArrow(cursor);
+                    //renderEngine.renderAfterLeftArrow(textBuffer);
+                } else if (code == KeyCode.RIGHT) {
+                    textBuffer.rightArrow(cursor);
                 }
             }
         }
