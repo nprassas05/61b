@@ -19,11 +19,11 @@ public class KeyPressPrinter extends Application {
 
     /** An EventHandler to handle keys that get pressed. */
     private class KeyEventHandler implements EventHandler<KeyEvent> {
+        
 
         @Override
         public void handle(KeyEvent keyEvent) {
             System.out.println(keyEvent);
-
 
             if (keyEvent.getEventType() == KeyEvent.KEY_TYPED) {
                 // Use the KEY_TYPED event rather than KEY_PRESSED for letter keys, because with

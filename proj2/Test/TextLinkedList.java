@@ -24,10 +24,12 @@ public class TextLinkedList {
 
 		public void setX(int x) {
 			text.setX(x);
+			xPos = x;
 		}
 
 		public void setY(int y) {
 			text.setY(y);
+			yPos = y;
 		}
 
 		public int getX() {
@@ -113,8 +115,39 @@ public class TextLinkedList {
 		}
 	}
 
-	// some sample text
+	public void downArrow(Rectangle cursor) {
+		int xPos = (int) cursor.getX();
+		TextNode runner = nodeBeforeCursor;
 
+		while (runner.getY() == cursor.getY()) {
+			runner = runner.next;
+		}
+
+		while (runner.getX() < xPos) {
+			runner = runner.next;
+		}
+
+		cursor.setY(runner.getY());
+		cursor.setX(runner.getX());
+	}
+
+	public void upArrow(Rectangle cursor) {
+		int xPos = (int) cursor.getX();
+		TextNode runner = nodeBeforeCursor;
+
+		while (runner != null && runner.getY() == cursor.getY()) {
+			runner = runner.prev;
+		}
+
+		while (runner != null && runner.getX() > xPos) {
+			runner = runner.prev;
+		}
+
+		cursor.setY(runner.getY());
+		cursor.setX(runner.getX());
+	}
+
+	// some sample text
 	public void rightArrow(Rectangle cursor) {
 		System.out.println("Before right arrow pressed: " + cursorXPos);
 		if (nodeAfterCursor.next != null) {
@@ -128,5 +161,21 @@ public class TextLinkedList {
 		cursor.setX(cursorXPos);
 		cursor.setY(cursorYPos);
 	}
+
+	/* for now because of our shitty design, we will pretend that the linked list
+	   is also the rendering engine, and have some rendering methods */
+	public void renderAfterInsertion(Text insertedText) {
+		int widthChange = (int) Math.round(insertedText.getLayoutBounds().getWidth());
+		TextNode runner = nodeAfterCursor;
+
+		cursorXPos = runner.getX() + widthChange;
+
+		System.out.println(runner.text.getText());
+
+		while (runner != null) {
+			runner.setX(runner.getX() + widthChange);
+			runner = runner.next;
+		}
+	}  
 
 }

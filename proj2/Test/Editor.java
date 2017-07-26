@@ -73,6 +73,9 @@ public class Editor extends Application {
                     root.getChildren().add(t);
                     adjustCursor();
 
+                    textBuffer.renderAfterInsertion(t);
+                    adjustCursor();
+
                     keyEvent.consume();
                 }
             } else if (keyEvent.getEventType() == KeyEvent.KEY_PRESSED) {
@@ -80,19 +83,18 @@ public class Editor extends Application {
                 // events have a code that we can check (KEY_TYPED events don't have an associated
                 // KeyCode).
                 KeyCode code = keyEvent.getCode();
-                if (code == KeyCode.UP) {
-                    fontSize += 5;
-                    
-                } else if (code == KeyCode.DOWN) {
-                    fontSize = Math.max(0, fontSize - 5);
-                    //displayText.setFont(Font.font(fontName, fontSize));
-                } else if (code == KeyCode.BACK_SPACE) {
+                
+                if (code == KeyCode.BACK_SPACE) {
 
                 } else if (code == KeyCode.LEFT) {
                     textBuffer.leftArrow(cursor);
                     //renderEngine.renderAfterLeftArrow(textBuffer);
                 } else if (code == KeyCode.RIGHT) {
                     textBuffer.rightArrow(cursor);
+                } else if (code == KeyCode.DOWN) {
+                    textBuffer.downArrow(cursor);
+                } else if (code == KeyCode.UP) {
+                    textBuffer.upArrow(cursor);
                 }
             }
         }
