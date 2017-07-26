@@ -173,7 +173,7 @@ public class TextLinkedList {
 		System.out.println(runner.text.getText());
 
 		while (runner != null) {
-			runner.setX(runner.getX() + widthChange);
+			runner.setX(runner.getX() + widthChange + 1);
 			runner = runner.next;
 		}
 	}  
