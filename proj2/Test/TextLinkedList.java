@@ -6,176 +6,122 @@ public class TextLinkedList {
 	/* internal linked list nodes, which will be text objects in this case */
 	public class TextNode {
 		private Text text;
-		private int xPos;
-		private int yPos;
 
 		public TextNode next;
 		public TextNode prev;
 
-		public TextNode(Text s) {
-			text = s;
-		}
-
-		public TextNode(Text s, TextNode n, TextNode p) {
-			text = s;
+		public TextNode(Text t, TextNode n, TextNode p) {
+			text = t;
 			next = n;
 			prev = p;
 		}
-
-		public void setX(int x) {
-			text.setX(x);
-			xPos = x;
-		}
-
-		public void setY(int y) {
-			text.setY(y);
-			yPos = y;
-		}
-
-		public int getX() {
-			return (int) text.getX();
-		}
-
-		public int getY() {
-			return (int) text.getY();
-		}
 	}
-
-	/* current x and y positions for cursor position */
-	private int cursorXPos = 5;
-	private int cursorYPos = 5;
 
 	/* sentinel node for convenience */
 	private TextNode sentinel;
 
 	/* textnode before the cursor, where text will be inserted after */
-	private TextNode nodeBeforeCursor;
-	private TextNode nodeAfterCursor;
+	private TextNode currentNode;
 
 	/* sentinel will initially point to null */
 	public TextLinkedList() {
-		sentinel = new TextNode(new Text("blah"), null, null);
-		nodeBeforeCursor = sentinel;
-		nodeAfterCursor = sentinel;	
+		sentinel = new TextNode(new Text(" "), null, null);
+		currentNode = sentinel;
 	}
 	
 	/* insert a new text object after the current cursor position */
 	public void insert(Text text) {
-		TextNode t = new TextNode(text, nodeBeforeCursor.next, nodeBeforeCursor);
-		t.setX(cursorXPos);
-		t.setY(cursorYPos);
-
-		cursorXPos = cursorXPos + (int) Math.round(text.getLayoutBounds().getWidth()) + 1;
-
-		nodeBeforeCursor.next = t;
-		nodeAfterCursor = t.next;
-		nodeBeforeCursor = t;
-
-		if (nodeAfterCursor != null) {
-			System.out.println(nodeAfterCursor.getX());
-		} else {
-			System.out.println("Insert: Still null");
-		}
-
-		// /* check if user hit carriage return to go to a new line */
-		// if (text.getText().equals("\r")) {
-		// 	cursorYPos += text.getLayoutBounds.getHeight();
-		// 	cursorXPos = 5;
-		// }
+		TextNode t = new TextNode(text, currentNode.next, currentNode);
+		currentNode.next = t;
+		currentNode = t;
 	}
 
-	/* set the cursor x and y coordinates */
-	public void setCursorCoordinates(double x, double y) {
-		cursorXPos = (int) x;
-		cursorYPos = (int) y;
-	}
+	// /* change the cursor position and cursor related nodes with each type of arrow click */
+	// public void leftArrow(Rectangle cursor) {
+	// 	cursorXPos = nodeBeforeCursor.getX();
+	// 	nodeAfterCursor = nodeBeforeCursor;
+	// 	nodeBeforeCursor = nodeBeforeCursor.prev;
 
-	/* get x and y coordinates of the cursor */
-	public int getCursorXPos() { return cursorXPos; }
-	public int getCursorYPos() { return cursorYPos; }
+	// 	cursor.setX(cursorXPos);
+	// 	cursor.setY(cursorYPos);
 
-	/* get the node after the cursor */
-	public TextNode nodeAfterCursor() {
-		return nodeAfterCursor;
-	}
+	// 	if (nodeAfterCursor != null) {
+	// 		System.out.println(nodeAfterCursor.getX());
+	// 	} else {
+	// 		System.out.println("Left Arrow: Still null");
+	// 	}
+	// }
 
-	/* change the cursor position and cursor related nodes with each type of arrow click */
-	public void leftArrow(Rectangle cursor) {
-		cursorXPos = nodeBeforeCursor.getX();
-		nodeAfterCursor = nodeBeforeCursor;
-		nodeBeforeCursor = nodeBeforeCursor.prev;
+	// public void downArrow(Rectangle cursor) {
+	// 	int xPos = (int) cursor.getX();
+	// 	TextNode runner = nodeBeforeCursor;
 
-		cursor.setX(cursorXPos);
-		cursor.setY(cursorYPos);
+	// 	while (runner.getY() == cursor.getY()) {
+	// 		runner = runner.next;
+	// 	}
 
-		if (nodeAfterCursor != null) {
-			System.out.println(nodeAfterCursor.getX());
-		} else {
-			System.out.println("Left Arrow: Still null");
-		}
-	}
+	// 	while (runner.getX() < xPos) {
+	// 		runner = runner.next;
+	// 	}
 
-	public void downArrow(Rectangle cursor) {
-		int xPos = (int) cursor.getX();
-		TextNode runner = nodeBeforeCursor;
+	// 	cursor.setY(runner.getY());
+	// 	cursor.setX(runner.getX());
+	// }
 
-		while (runner.getY() == cursor.getY()) {
-			runner = runner.next;
-		}
+	// public void upArrow(Rectangle cursor) {
+	// 	int xPos = (int) cursor.getX();
+	// 	TextNode runner = nodeBeforeCursor;
 
-		while (runner.getX() < xPos) {
-			runner = runner.next;
-		}
+	// 	while (runner != null && runner.getY() == cursor.getY()) {
+	// 		runner = runner.prev;
+	// 	}
 
-		cursor.setY(runner.getY());
-		cursor.setX(runner.getX());
-	}
+	// 	while (runner != null && runner.getX() > xPos) {
+	// 		runner = runner.prev;
+	// 	}
 
-	public void upArrow(Rectangle cursor) {
-		int xPos = (int) cursor.getX();
-		TextNode runner = nodeBeforeCursor;
+	// 	cursor.setY(runner.getY());
+	// 	cursor.setX(runner.getX());
+	// }
 
-		while (runner != null && runner.getY() == cursor.getY()) {
-			runner = runner.prev;
-		}
-
-		while (runner != null && runner.getX() > xPos) {
-			runner = runner.prev;
-		}
-
-		cursor.setY(runner.getY());
-		cursor.setX(runner.getX());
-	}
-
-	// some sample text
-	public void rightArrow(Rectangle cursor) {
-		System.out.println("Before right arrow pressed: " + cursorXPos);
-		if (nodeAfterCursor.next != null) {
-			cursorXPos = nodeAfterCursor.next.getX();
-		}
-		System.out.println("After right arrow: " + cursorXPos);
+	// // some sample text
+	// public void rightArrow(Rectangle cursor) {
+	// 	System.out.println("Before right arrow pressed: " + cursorXPos);
+	// 	if (nodeAfterCursor.next != null) {
+	// 		cursorXPos = nodeAfterCursor.next.getX();
+	// 	}
+	// 	System.out.println("After right arrow: " + cursorXPos);
 		
-		nodeBeforeCursor = nodeAfterCursor;
-		nodeAfterCursor = nodeAfterCursor.next;
+	// 	nodeBeforeCursor = nodeAfterCursor;
+	// 	nodeAfterCursor = nodeAfterCursor.next;
 
-		cursor.setX(cursorXPos);
-		cursor.setY(cursorYPos);
-	}
+	// 	cursor.setX(cursorXPos);
+	// 	cursor.setY(cursorYPos);
+	// }
 
-	/* for now because of our shitty design, we will pretend that the linked list
-	   is also the rendering engine, and have some rendering methods */
-	public void renderAfterInsertion(Text insertedText) {
-		int widthChange = (int) Math.round(insertedText.getLayoutBounds().getWidth());
-		TextNode runner = nodeAfterCursor;
+	// /* for now because of our shitty design, we will pretend that the linked list
+	//    is also the rendering engine, and have some rendering methods */
+	// public void renderAfterInsertion(Text insertedText) {
+	// 	int widthChange = (int) Math.round(insertedText.getLayoutBounds().getWidth());
+	// 	TextNode runner = nodeAfterCursor;
 
-		cursorXPos = runner.getX() + widthChange;
+	// 	cursorXPos = runner.getX() + widthChange;
 
-		System.out.println(runner.text.getText());
+	// 	System.out.println(runner.text.getText());
 
-		while (runner != null) {
-			runner.setX(runner.getX() + widthChange + 1);
-			runner = runner.next;
-		}
-	}  
+	// 	while (runner != null) {
+	// 		runner.setX(runner.getX() + widthChange + 1);
+	// 		runner = runner.next;
+	// 	}
+	// }
+
+	// public void renderYah() {
+	// 	int xPos = 5, yPos = 5;
+
+	// 	TextNode runner = sentinel.next;
+	// 	while (runner != null) {
+
+	// 	}
+	// }  
 
 }
