@@ -41,6 +41,8 @@ public class RenderEngine {
 			if (isStartOfWord(runner.text)) {
 				int length = wordLengthMap.get(runner.text);
 
+				System.out.println(runner.text.getText() + ", " + length);
+
 				/* check if word length is too long to fit on current line */
 				/* for now assuming we always have a 500 by 500 pixel window, but this will change */
 				if (length + currentX > 495) {
@@ -50,9 +52,12 @@ public class RenderEngine {
 				}
 			}
 
+			
 			runner.setX(currentX);
 			runner.setY(currentY);
 			currentX += runner.getWidth() + 1;
+
+			System.out.println(runner.text.getText() + ", " + currentX + ", " + runner.text.getLayoutBounds().getWidth());
 			
 			runner = runner.next;
 		}

@@ -13,7 +13,7 @@ import javafx.scene.shape.Rectangle;
 
 public class Editor extends Application {
     Group root;
-    TextLinkedList textBuffer;
+    TextBufferList textBuffer;
 
     /* cursor will start at coordinates (5, 5) and have a width of 1 pixel, the 20 will change eventually */
     private final Rectangle cursor = new Rectangle(5.0, 5.0, 1, 20);
