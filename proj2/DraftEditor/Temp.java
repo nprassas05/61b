@@ -39,7 +39,7 @@ public class Temp extends Application {
 
         KeyEventHandler(final Group root, int windowWidth, int windowHeight) {
             textBuffer = new TextBufferList();
-            renderEngine = new RenderEngine(textBuffer);
+            renderEngine = new RenderEngine(textBuffer, cursor);
 
             arbitraryText.setFont(Font.font(fontName, fontSize));
         }
@@ -81,12 +81,13 @@ public class Temp extends Application {
                 KeyCode code = keyEvent.getCode();
                 
                 if (code == KeyCode.BACK_SPACE) {
-
+                    Text deletedText = textBuffer.extractCurrentNode();
+                    root.getChildren().remove(deletedText);
+                    renderEngine.adjustCursor();
                 } else if (code == KeyCode.LEFT) {
-                    // textBuffer.leftArrow(cursor);
-                    //renderEngine.renderAfterLeftArrow(textBuffer);
+                    renderEngine.leftArrow();
                 } else if (code == KeyCode.RIGHT) {
-                    // textBuffer.rightArrow(cursor);
+                    renderEngine.rightArrow();
                 } else if (code == KeyCode.DOWN) {
                     // textBuffer.downArrow(cursor);
                 } else if (code == KeyCode.UP) {

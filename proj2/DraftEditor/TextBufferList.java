@@ -24,6 +24,14 @@ public class TextBufferList {
 			text.setY(y);
 		}
 
+		public int getX() {
+			return (int) text.getX();
+		}
+
+		public int getY() {
+			return (int) text.getY();
+		}
+
 		public char firstChar() {
 			return text.getText().charAt(0);
 		}
@@ -52,6 +60,19 @@ public class TextBufferList {
 		currentNode = t;
 	}
 
+	/* remove and return the current node in the list */
+	public Text extractCurrentNode() {
+		TextNode exNode = currentNode;
+
+		if (currentNode.next != null) {
+			currentNode.next.prev = currentNode.prev;
+		}
+		currentNode.prev.next = currentNode.next;
+		currentNode = currentNode.prev;
+
+		return exNode.text;
+	}
+
 	/* return the current node */
 	public TextNode getCurrentNode() {
 		return currentNode;
@@ -61,92 +82,13 @@ public class TextBufferList {
 		return sentinel.next;
 	}
 
-	// /* change the cursor position and cursor related nodes with each type of arrow click */
-	// public void leftArrow(Rectangle cursor) {
-	// 	cursorXPos = nodeBeforeCursor.getX();
-	// 	nodeAfterCursor = nodeBeforeCursor;
-	// 	nodeBeforeCursor = nodeBeforeCursor.prev;
+	/* move the current node one place to the left */
+	public void goLeft() {
+		currentNode = currentNode.prev;
+	}
 
-	// 	cursor.setX(cursorXPos);
-	// 	cursor.setY(cursorYPos);
-
-	// 	if (nodeAfterCursor != null) {
-	// 		System.out.println(nodeAfterCursor.getX());
-	// 	} else {
-	// 		System.out.println("Left Arrow: Still null");
-	// 	}
-	// }
-
-	// public void downArrow(Rectangle cursor) {
-	// 	int xPos = (int) cursor.getX();
-	// 	TextNode runner = nodeBeforeCursor;
-
-	// 	while (runner.getY() == cursor.getY()) {
-	// 		runner = runner.next;
-	// 	}
-
-	// 	while (runner.getX() < xPos) {
-	// 		runner = runner.next;
-	// 	}
-
-	// 	cursor.setY(runner.getY());
-	// 	cursor.setX(runner.getX());
-	// }
-
-	// public void upArrow(Rectangle cursor) {
-	// 	int xPos = (int) cursor.getX();
-	// 	TextNode runner = nodeBeforeCursor;
-
-	// 	while (runner != null && runner.getY() == cursor.getY()) {
-	// 		runner = runner.prev;
-	// 	}
-
-	// 	while (runner != null && runner.getX() > xPos) {
-	// 		runner = runner.prev;
-	// 	}
-
-	// 	cursor.setY(runner.getY());
-	// 	cursor.setX(runner.getX());
-	// }
-
-	// // some sample text
-	// public void rightArrow(Rectangle cursor) {
-	// 	System.out.println("Before right arrow pressed: " + cursorXPos);
-	// 	if (nodeAfterCursor.next != null) {
-	// 		cursorXPos = nodeAfterCursor.next.getX();
-	// 	}
-	// 	System.out.println("After right arrow: " + cursorXPos);
-		
-	// 	nodeBeforeCursor = nodeAfterCursor;
-	// 	nodeAfterCursor = nodeAfterCursor.next;
-
-	// 	cursor.setX(cursorXPos);
-	// 	cursor.setY(cursorYPos);
-	// }
-
-	// /* for now because of our shitty design, we will pretend that the linked list
-	//    is also the rendering engine, and have some rendering methods */
-	// public void renderAfterInsertion(Text insertedText) {
-	// 	int widthChange = (int) Math.round(insertedText.getLayoutBounds().getWidth());
-	// 	TextNode runner = nodeAfterCursor;
-
-	// 	cursorXPos = runner.getX() + widthChange;
-
-	// 	System.out.println(runner.text.getText());
-
-	// 	while (runner != null) {
-	// 		runner.setX(runner.getX() + widthChange + 1);
-	// 		runner = runner.next;
-	// 	}
-	// }
-
-	// public void renderYah() {
-	// 	int xPos = 5, yPos = 5;
-
-	// 	TextNode runner = sentinel.next;
-	// 	while (runner != null) {
-
-	// 	}
-	// }  
-
+	/* move current node to the right */
+	public void goRight() {
+		currentNode = currentNode.next;
+	}
 }

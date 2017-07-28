@@ -20,9 +20,16 @@ public class RenderEngine {
 	/* use a map for tracking the start of each word in text entered by user,
 	   as well as the length of each word corresponding to that starting letter */
 	private Map<Text, Integer> wordLengthMap;
+	private Rectangle cursor;
 
 	public RenderEngine(TextBufferList tb) {
 		textBuffer = tb;
+		wordLengthMap = new HashMap<>();
+	}
+
+	public RenderEngine(TextBufferList tb, Rectangle r) {
+		textBuffer = tb;
+		cursor = r;
 		wordLengthMap = new HashMap<>();
 	}
 
@@ -61,7 +68,8 @@ public class RenderEngine {
 			
 			runner = runner.next;
 		}
-		//sSystem.out.println();
+
+		adjustCursor();
 	}
 
 	public HashMap<Text, Integer> getWordLengthMap() {
@@ -92,5 +100,32 @@ public class RenderEngine {
 	public boolean tooLongForCurrentLine(Text t) {
 		int length = wordLengthMap.get(t);
 		return false;
+	}
+
+	/* change the cursor position and text buffer after
+	   the user presses left arrow key */
+	public void leftArrow() {
+		TextBufferList.TextNode currNode = textBuffer.getCurrentNode();
+		cursor.setX(currNode.getX());
+		cursor.setY(currNode.getY());
+		
+		textBuffer.goLeft();
+	}
+
+	/* change cursor and text buffer after right arrow key */
+	public void rightArrow() {
+		textBuffer.goRight();
+		TextBufferList.TextNode currNode = textBuffer.getCurrentNode();
+		cursor.setX(currNode.getX());
+		cursor.setY(currNode.getY());
+	}
+
+	/* adjust the cursor to be positioned correctly
+	   in the text document */
+	public void adjustCursor() {
+		TextBufferList.TextNode currNode = textBuffer.getCurrentNode();
+		int xPos = currNode.getX() + currNode.getWidth() + 1;
+		cursor.setX(xPos);
+		cursor.setY(currNode.getY());
 	}
 }
