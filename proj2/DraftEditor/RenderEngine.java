@@ -41,14 +41,14 @@ public class RenderEngine {
 			if (isStartOfWord(runner.text)) {
 				int length = wordLengthMap.get(runner.text);
 
-				System.out.println(runner.text.getText() + ", " + length);
+				//System.out.println("(" + runner.text.getText() + ", " + length + ", " + currentX + ") ");
 
 				/* check if word length is too long to fit on current line */
 				/* for now assuming we always have a 500 by 500 pixel window, but this will change */
 				if (length + currentX > 495) {
 					currentX = 5;
 					currentY += 30; /////////// @@@@@@@@
-					System.out.println(runner.firstChar() + " is too long");
+					//System.out.println(runner.firstChar() + " is too long");
 				}
 			}
 
@@ -57,10 +57,11 @@ public class RenderEngine {
 			runner.setY(currentY);
 			currentX += runner.getWidth() + 1;
 
-			System.out.println(runner.text.getText() + ", " + currentX + ", " + runner.text.getLayoutBounds().getWidth());
+			//System.out.println("currentX = " + currentX);
 			
 			runner = runner.next;
 		}
+		//sSystem.out.println();
 	}
 
 	public HashMap<Text, Integer> getWordLengthMap() {
@@ -75,7 +76,7 @@ public class RenderEngine {
 			} else if (runner.firstChar() != ' ' && currentWord != null) {
 				int currentLength = wordLengthMap.get(currentWord);
 				int runnerLength = runner.getWidth();
-				wordLengthMap.put(currentWord, currentLength + runnerLength);
+				wordLengthMap.put(currentWord, currentLength + runnerLength + 1); // trying extra 1 for pixel between letters
 			}
 
 			runner = runner.next;
