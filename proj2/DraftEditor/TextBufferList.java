@@ -89,6 +89,7 @@ public class TextBufferList {
 
 	/* move current node to the right */
 	public void goRight() {
+		if (currentNode.next != null)
 		currentNode = currentNode.next;
 	}
 }

@@ -53,10 +53,9 @@ public class Temp extends Application {
                 String characterTyped = keyEvent.getCharacter();
                 
                 /* check if user entered carriage return to go to new line */
-                if (characterTyped.length() > 0 && characterTyped.charAt(0) == '\r') { 
-                    cursor.setY(cursor.getY() + arbitraryText.getLayoutBounds().getHeight());
-                    cursor.setX(5);
-                    //textBuffer.setCursorCoordinates(cursor.getX(), cursor.getY());
+                if (characterTyped.length() > 0 && characterTyped.charAt(0) == '\r') {
+                    textBuffer.insert(new Text("\n"));
+                    renderEngine.render();
                 } else if (characterTyped.length() > 0 && characterTyped.charAt(0) != 8) {
                     // Ignore control keys, which have non-zero length, as well as the backspace
                     // key, which is represented as a character of value = 8 on Windows.
@@ -83,7 +82,7 @@ public class Temp extends Application {
                 if (code == KeyCode.BACK_SPACE) {
                     Text deletedText = textBuffer.extractCurrentNode();
                     root.getChildren().remove(deletedText);
-                    renderEngine.adjustCursor();
+                    renderEngine.render();
                 } else if (code == KeyCode.LEFT) {
                     renderEngine.leftArrow();
                 } else if (code == KeyCode.RIGHT) {

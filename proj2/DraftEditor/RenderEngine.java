@@ -13,6 +13,7 @@ import javafx.scene.shape.Rectangle;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.ArrayList;
 
 public class RenderEngine {
 	private TextBufferList textBuffer;
@@ -21,16 +22,27 @@ public class RenderEngine {
 	   as well as the length of each word corresponding to that starting letter */
 	private Map<Text, Integer> wordLengthMap;
 	private Rectangle cursor;
+	ArrayList<TextBufferList.TextNode> lastNodeOnEachLine;
+
+	 /** The font and size of text to display on the screen */
+    private int fontSize = 12;
+    private String fontName = "Verdana";
+
+	/* Text object simply used for resizing certain things */
+    Text arbitraryText = new Text("a");
+    int lineHeight = (int) arbitraryText.getLayoutBounds().getHeight();
 
 	public RenderEngine(TextBufferList tb) {
 		textBuffer = tb;
 		wordLengthMap = new HashMap<>();
+		arbitraryText.setFont(Font.font(fontName, fontSize));
 	}
 
 	public RenderEngine(TextBufferList tb, Rectangle r) {
 		textBuffer = tb;
 		cursor = r;
 		wordLengthMap = new HashMap<>();
+		arbitraryText.setFont(Font.font(fontName, fontSize));
 	}
 
 	public void render() {
@@ -54,12 +66,24 @@ public class RenderEngine {
 				/* for now assuming we always have a 500 by 500 pixel window, but this will change */
 				if (length + currentX > 495) {
 					currentX = 5;
-					currentY += 30; /////////// @@@@@@@@
-					//System.out.println(runner.firstChar() + " is too long");
+					currentY += lineHeight; /////////// @@@@@@@@
 				}
 			}
 
-			
+			/* check for new line character */
+			if (runner.text.getText().charAt(0) == '\n') {
+				currentX = 5;
+				currentY += lineHeight; /////////// @@@@@@@@
+				runner = runner.next;
+				// runner.setX(currentX);
+				// runner.setY(currentY);
+				cursor.setX(currentX);
+				cursor.setY(currentY);
+				
+				
+				continue;
+			}
+
 			runner.setX(currentX);
 			runner.setY(currentY);
 			currentX += runner.getWidth() + 1;
@@ -115,15 +139,17 @@ public class RenderEngine {
 	/* change cursor and text buffer after right arrow key */
 	public void rightArrow() {
 		textBuffer.goRight();
-		TextBufferList.TextNode currNode = textBuffer.getCurrentNode();
-		cursor.setX(currNode.getX());
-		cursor.setY(currNode.getY());
+		adjustCursor();
 	}
 
 	/* adjust the cursor to be positioned correctly
 	   in the text document */
 	public void adjustCursor() {
 		TextBufferList.TextNode currNode = textBuffer.getCurrentNode();
+		if (currNode == null || currNode.text.getText().charAt(0) == '\n') {
+			return;
+		}
+
 		int xPos = currNode.getX() + currNode.getWidth() + 1;
 		cursor.setX(xPos);
 		cursor.setY(currNode.getY());
