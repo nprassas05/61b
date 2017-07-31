@@ -66,8 +66,6 @@ public class RenderEngine {
 			if (isStartOfWord(runner.text)) {
 				int length = wordLengthMap.get(runner.text);
 
-				//System.out.println("(" + runner.text.getText() + ", " + length + ", " + currentX + ") ");
-
 				/* check if word length is too long to fit on current line */
 				/* for now assuming we always have a 500 by 500 pixel window, but this will change */
 				if (length + currentX > 495) {
@@ -78,17 +76,15 @@ public class RenderEngine {
 				}
 			}
 
+			runner.setX(currentX);
+			runner.setY(currentY);
+
 			/* check for new line character */
 			if (runner.text.getText().charAt(0) == '\n') {
-				runner.setX(currentX);
-				runner.setY(currentY);
-
 				currentX = 5;
 				currentY += lineHeight; /////////// @@@@@@@@
 				lastNodeOnEachLine.add(runner);
 				runner = runner.next;
-				// runner.setX(currentX);
-				// runner.setY(currentY);
 				cursor.setX(currentX);
 				cursor.setY(currentY);
 				setCurrentLine();
@@ -97,8 +93,6 @@ public class RenderEngine {
 				continue;
 			}
 
-			runner.setX(currentX);
-			runner.setY(currentY);
 			currentX += runner.getWidth() + 1;
 
 			if (runner.next == null) {
