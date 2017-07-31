@@ -8,6 +8,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.scene.shape.Rectangle;
 
@@ -88,19 +89,29 @@ public class Temp extends Application {
                 } else if (code == KeyCode.RIGHT) {
                     renderEngine.rightArrow();
                 } else if (code == KeyCode.DOWN) {
-                    // textBuffer.downArrow(cursor);
+                    renderEngine.downArrow();
                 } else if (code == KeyCode.UP) {
-                    // textBuffer.upArrow(cursor);
+                    renderEngine.upArrow();
                 }
             }
         }
     }
 
-    /* reset the x and y dimenions of the cursor according to values
-       stored in our linked list */
-    public void adjustCursor() {
-        
-    }   
+    /** An event handler that displays the current position of the mouse whenever it is clicked. */
+    private class MouseClickEventHandler implements EventHandler<MouseEvent> {
+        MouseClickEventHandler() {}
+
+        @Override
+        public void handle(MouseEvent mouseEvent) {
+            // Because we registered this EventHandler using setOnMouseClicked, it will only called
+            // with mouse events of type MouseEvent.MOUSE_CLICKED.  A mouse clicked event is
+            // generated anytime the mouse is pressed and released on the same JavaFX node.
+            double mousePressedX = mouseEvent.getX();
+            double mousePressedY = mouseEvent.getY();
+
+            renderEngine.handleMouseClick(mousePressedX, mousePressedY);
+        }
+    }
 
     @Override
     public void start(Stage primaryStage) {
@@ -126,6 +137,7 @@ public class Temp extends Application {
         // Register the event handler to be called for all KEY_PRESSED and KEY_TYPED events.
         scene.setOnKeyTyped(keyEventHandler);
         scene.setOnKeyPressed(keyEventHandler);
+        scene.setOnMouseClicked(new MouseClickEventHandler());
 
         primaryStage.setTitle("Editor Say WHATTTT");
 

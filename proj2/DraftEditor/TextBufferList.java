@@ -73,6 +73,11 @@ public class TextBufferList {
 		return exNode.text;
 	}
 
+	/* change the current node */
+	public void setCurrentNode(TextNode t) {
+		currentNode = t;
+	}
+
 	/* return the current node */
 	public TextNode getCurrentNode() {
 		return currentNode;
