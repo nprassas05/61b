@@ -80,14 +80,11 @@ public class RenderEngine {
 			runner.setY(currentY);
 
 			/* check for new line character */
-			if (runner.text.getText().charAt(0) == '\n') {
+			if (runner.firstChar() == '\n') {
 				currentX = 5;
 				currentY += lineHeight; /////////// @@@@@@@@
 				lastNodeOnEachLine.add(runner);
 				runner = runner.next;
-				cursor.setX(currentX);
-				cursor.setY(currentY);
-				setCurrentLine();
 				++numberOfLines;
 				
 				continue;
@@ -191,13 +188,15 @@ public class RenderEngine {
 	   in the text document */
 	public void adjustCursor() {
 		TextBufferList.TextNode currNode = textBuffer.getCurrentNode();
-		if (currNode == null || currNode.text.getText().charAt(0) == '\n') {
-			return;
-		}
 
-		int xPos = currNode.getX() + currNode.getWidth() + 1;
-		cursor.setX(xPos);
-		cursor.setY(currNode.getY());
+		if (currNode.text.getText().charAt(0) == '\n') {
+			cursor.setX(5);
+			cursor.setY(currNode.getY() + lineHeight);
+		} else {
+			int xPos = currNode.getX() + currNode.getWidth() + 1;
+			cursor.setX(xPos);
+			cursor.setY(currNode.getY());
+		}
 
 		setCurrentLine();
 	}
@@ -223,10 +222,8 @@ public class RenderEngine {
 		int lineNum = getClosestLineNum(clickedY);
 		System.out.println(lineNum);
 		TextBufferList.TextNode runner = lastNodeOnEachLine.get(lineNum);
-		//System.out.println("text be " + runner.text.getText());
 		
 		while (runner.getX() > clickedX) {
-			//System.out.println(runner.text.getText() + "\n----------------------");
 			runner = runner.prev;
 		}
 
