@@ -154,7 +154,7 @@ public class RenderEngine {
 			return;
 		}
 
-		int currentX = (int) cursor.getX();
+		int currentX = textBuffer.getCurrentNode().getX();
 		TextBufferList.TextNode runner = lastNodeOnEachLine.get(currentLine - 1);
 		while (runner.getX() > currentX) {
 			runner = runner.prev;
@@ -170,7 +170,7 @@ public class RenderEngine {
 			return;
 		}
 
-		int currentX = (int) cursor.getX(); System.out.println("currentX = " + currentX);
+		int currentX = textBuffer.getCurrentNode().getX();
 		TextBufferList.TextNode runner = lastNodeOnEachLine.get(currentLine);
 		
 		runner = runner.next;
