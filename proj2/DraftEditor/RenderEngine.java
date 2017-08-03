@@ -134,8 +134,8 @@ public class RenderEngine {
 							TextBufferList.TextNode nodeB,
 							int xPos) {
 
-		int distA = Math.abs(nodeA.getX() - xPos);
-		int distB = Math.abs(nodeB.getX() - xPos);
+		int distA = Math.abs(nodeA.getX() + nodeA.getWidth() - xPos);
+		int distB = Math.abs(nodeB.getX() + nodeB.getWidth() - xPos);
 
 		return distA < distB ? nodeA : nodeB;
 	}
@@ -148,7 +148,7 @@ public class RenderEngine {
 			runner = runner.prev;
 		}
 
-		TextBufferList.TextNode closestNode = closerNode(runner, runner.next, targetXPos);
+		TextBufferList.TextNode closestNode = closerNode(runner, runner.prev, targetXPos);
 		textBuffer.setCurrentNode(closestNode);
 		adjustCursor();
 	}
@@ -172,7 +172,7 @@ public class RenderEngine {
 			return;
 		}
 
-		int currentX = textBuffer.getCurrentNode().getX();
+		int currentX = (int) cursor.getX();
 		TextBufferList.TextNode runner = lastNodeOnEachLine.get(currentLine - 1);
 		moveCursor(runner, currentX);
 	}
@@ -183,7 +183,7 @@ public class RenderEngine {
 			return;
 		}
 
-		int currentX = textBuffer.getCurrentNode().getX();
+		int currentX = (int) cursor.getX();
 		TextBufferList.TextNode runner = lastNodeOnEachLine.get(currentLine + 1);
 		moveCursor(runner, currentX);
 	}

@@ -41,16 +41,16 @@ public class TextBufferList {
 		}
 	}
 
-	/* sentinel node for convenience */
-	private TextNode sentinel;
+	/* frontSentinel node for convenience */
+	private TextNode frontSentinel;
 
 	/* textnode before the cursor, where text will be inserted after */
 	private TextNode currentNode;
 
-	/* sentinel will initially point to null */
+	/* frontSentinel will initially point to null */
 	public TextBufferList() {
-		sentinel = new TextNode(new Text(" "), null, null);
-		currentNode = sentinel;
+		frontSentinel = new TextNode(new Text(" "), null, null);
+		currentNode = frontSentinel;
 	}
 	
 	/* insert a new text object after the current cursor position */
@@ -84,7 +84,7 @@ public class TextBufferList {
 	}
 
 	public TextNode getFirstNode() {
-		return sentinel.next;
+		return frontSentinel.next;
 	}
 
 	/* move the current node one place to the left */
