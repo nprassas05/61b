@@ -127,19 +127,37 @@ public class RenderEngine {
 		return wordLengthMap.containsKey(t);
 	}
 
-	public boolean tooLongForCurrentLine(Text t) {
-		int length = wordLengthMap.get(t);
-		return false;
+	/* return the node between two nodes that is closer
+	   to a given x position */
+	public TextBufferList.TextNode closerNode(
+							TextBufferList.TextNode nodeA, 
+							TextBufferList.TextNode nodeB,
+							int xPos) {
+
+		int distA = Math.abs(nodeA.getX() - xPos);
+		int distB = Math.abs(nodeB.getX() - xPos);
+
+		return distA < distB ? nodeA : nodeB;
+	}
+
+	/* move an iteration node on a line until it gets close enough to
+	   the target xPosition, and change the cursor and current node
+	   values accordingly */
+	public void moveCursor(TextBufferList.TextNode runner, int targetXPos) {
+		while (runner.getX() > targetXPos) {
+			runner = runner.prev;
+		}
+
+		TextBufferList.TextNode closestNode = closerNode(runner, runner.prev, targetXPos);
+		textBuffer.setCurrentNode(closestNode);
+		adjustCursor();
 	}
 
 	/* change the cursor position and text buffer after
 	   the user presses left arrow key */
 	public void leftArrow() {
-		TextBufferList.TextNode currNode = textBuffer.getCurrentNode();
-		cursor.setX(currNode.getX());
-		cursor.setY(currNode.getY());
-		
 		textBuffer.goLeft();
+		adjustCursor();
 	}
 
 	/* change cursor and text buffer after right arrow key */
@@ -156,12 +174,7 @@ public class RenderEngine {
 
 		int currentX = textBuffer.getCurrentNode().getX();
 		TextBufferList.TextNode runner = lastNodeOnEachLine.get(currentLine - 1);
-		while (runner.getX() > currentX) {
-			runner = runner.prev;
-		}
-
-		textBuffer.setCurrentNode(runner);
-		adjustCursor();
+		moveCursor(runner, currentX);
 	}
 
 	/* down arrow key */
@@ -171,17 +184,8 @@ public class RenderEngine {
 		}
 
 		int currentX = textBuffer.getCurrentNode().getX();
-		TextBufferList.TextNode runner = lastNodeOnEachLine.get(currentLine);
-		
-		runner = runner.next;
-		while (runner.getX() < currentX && runner.next != null) {
-			// System.out.println("node text " + runner.text.getText() + " " + runner.getX());
-			runner = runner.next;
-		}
-
-		textBuffer.setCurrentNode(runner);
-		adjustCursor();
-
+		TextBufferList.TextNode runner = lastNodeOnEachLine.get(currentLine + 1);
+		moveCursor(runner, currentX);
 	}
 
 	/* adjust the cursor to be positioned correctly
@@ -222,12 +226,7 @@ public class RenderEngine {
 		int lineNum = getClosestLineNum(clickedY);
 		System.out.println(lineNum);
 		TextBufferList.TextNode runner = lastNodeOnEachLine.get(lineNum);
-		
-		while (runner.getX() > clickedX) {
-			runner = runner.prev;
-		}
 
-		textBuffer.setCurrentNode(runner);
-		adjustCursor();
+		moveCursor(runner, (int) clickedX);
 	}
 }
