@@ -156,14 +156,16 @@ public class RenderEngine {
 	/* change the cursor position and text buffer after
 	   the user presses left arrow key */
 	public void leftArrow() {
+		cursor.setX(textBuffer.currentX());
+		cursor.setY(textBuffer.currentY());
 		textBuffer.goLeft();
-		adjustCursor();
 	}
 
 	/* change cursor and text buffer after right arrow key */
 	public void rightArrow() {
 		textBuffer.goRight();
-		adjustCursor();
+		cursor.setX(textBuffer.getCurrentNode().next.getX());
+		cursor.setY(textBuffer.getCurrentNode().next.getY());
 	}
 
 	/* change cursor and text buffer after up arrow key */
@@ -202,7 +204,7 @@ public class RenderEngine {
 			cursor.setY(currNode.getY());
 		}
 
-		setCurrentLine();
+		setCurrentLine(); // do I need this? examine further
 	}
 
 	public void setCurrentLine() {

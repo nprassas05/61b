@@ -49,7 +49,7 @@ public class TextBufferList {
 
 	/* frontSentinel will initially point to null */
 	public TextBufferList() {
-		frontSentinel = new TextNode(new Text(" "), null, null);
+		frontSentinel = new TextNode(new Text(5, 5, " "), null, null);
 		currentNode = frontSentinel;
 	}
 	
@@ -89,7 +89,9 @@ public class TextBufferList {
 
 	/* move the current node one place to the left */
 	public void goLeft() {
-		currentNode = currentNode.prev;
+		if (currentNode != frontSentinel) {
+			currentNode = currentNode.prev;
+		}
 	}
 
 	/* move current node to the right */
@@ -97,4 +99,8 @@ public class TextBufferList {
 		if (currentNode.next != null)
 		currentNode = currentNode.next;
 	}
+
+	/* return the x and y coordinates of the current node */
+	public int currentX() { return currentNode.getX(); }
+	public int currentY() { return currentNode.getY(); }
 }
