@@ -148,7 +148,7 @@ public class RenderEngine {
 			runner = runner.prev;
 		}
 
-		TextBufferList.TextNode closestNode = closerNode(runner, runner.prev, targetXPos);
+		TextBufferList.TextNode closestNode = closerNode(runner, runner.next, targetXPos);
 		textBuffer.setCurrentNode(closestNode);
 		adjustCursor();
 	}
