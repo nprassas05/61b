@@ -2,6 +2,7 @@ import javafx.scene.text.Text;
 import javafx.scene.shape.Rectangle;
 
 public class TextBufferList {
+	private int size;
 
 	/* internal linked list nodes, which will be text objects in this case */
 	public class TextNode {
@@ -51,6 +52,7 @@ public class TextBufferList {
 	public TextBufferList() {
 		frontSentinel = new TextNode(new Text(5, 5, " "), null, null);
 		currentNode = frontSentinel;
+		size = 0;
 	}
 	
 	/* insert a new text object after the current cursor position */
@@ -58,6 +60,7 @@ public class TextBufferList {
 		TextNode t = new TextNode(text, currentNode.next, currentNode);
 		currentNode.next = t;
 		currentNode = t;
+		++size;
 	}
 
 	/* remove and return the current node in the list */
@@ -69,6 +72,7 @@ public class TextBufferList {
 		}
 		currentNode.prev.next = currentNode.next;
 		currentNode = currentNode.prev;
+		--size;
 
 		return exNode.text;
 	}
@@ -96,8 +100,13 @@ public class TextBufferList {
 
 	/* move current node to the right */
 	public void goRight() {
-		if (currentNode.next != null)
-		currentNode = currentNode.next;
+		if (currentNode.next != null) {
+			currentNode = currentNode.next;
+		}
+	}
+
+	public int size() {
+		return size;
 	}
 
 	/* return the x and y coordinates of the current node */

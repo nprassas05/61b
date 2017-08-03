@@ -164,8 +164,7 @@ public class RenderEngine {
 	/* change cursor and text buffer after right arrow key */
 	public void rightArrow() {
 		textBuffer.goRight();
-		cursor.setX(textBuffer.getCurrentNode().next.getX());
-		cursor.setY(textBuffer.getCurrentNode().next.getY());
+		adjustCursor();
 	}
 
 	/* change cursor and text buffer after up arrow key */

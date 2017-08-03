@@ -80,7 +80,7 @@ public class Temp extends Application {
                 // KeyCode).
                 KeyCode code = keyEvent.getCode();
                 
-                if (code == KeyCode.BACK_SPACE) {
+                if (code == KeyCode.BACK_SPACE && textBuffer.size() > 0) {
                     Text deletedText = textBuffer.extractCurrentNode();
                     root.getChildren().remove(deletedText);
                     renderEngine.render();
@@ -139,7 +139,7 @@ public class Temp extends Application {
         scene.setOnKeyPressed(keyEventHandler);
         scene.setOnMouseClicked(new MouseClickEventHandler());
 
-        primaryStage.setTitle("Editor Say WHATTTT");
+        primaryStage.setTitle("Editor");
 
         // This is boilerplate, necessary to setup the window where things are displayed.
         primaryStage.setScene(scene);
