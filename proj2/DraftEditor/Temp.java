@@ -16,6 +16,9 @@ public class Temp extends Application {
     Group root;
     TextBufferList textBuffer;
 
+    /* the name of file being edited */
+    private String fileName;
+
     /* cursor will start at coordinates (5, 5) and have a width of 1 pixel, the 20 will change eventually */
     private final Rectangle cursor = new Rectangle(5.0, 5.0, 1, 20);
 
@@ -47,7 +50,18 @@ public class Temp extends Application {
 
         @Override
         public void handle(KeyEvent keyEvent) {
-            if (keyEvent.getEventType() == KeyEvent.KEY_TYPED) {
+        	if (keyEvent.isShortcutDown()) {
+        		KeyCode code = keyEvent.getCode();
+        		
+        		if (code == KeyCode.EQUALS || code == KeyCode.PLUS) {
+        			fontSize += 4;
+        			renderEngine.resize(4);
+        		} else if (code == KeyCode.MINUS && fontSize >= 8) {
+        			fontSize -= 4;
+        			renderEngine.resize(-4);
+        		}
+
+        	} else if (keyEvent.getEventType() == KeyEvent.KEY_TYPED) {
                 // Use the KEY_TYPED event rather than KEY_PRESSED for letter keys, because with
                 // the KEY_TYPED event, javafx handles the "Shift" key and associated
                 // capitalization.
@@ -140,6 +154,10 @@ public class Temp extends Application {
         scene.setOnMouseClicked(new MouseClickEventHandler());
 
         primaryStage.setTitle("Editor");
+
+        /* render the text in the file being opened if that file
+           was existant beforehand */
+        renderEngine.render();
 
         // This is boilerplate, necessary to setup the window where things are displayed.
         primaryStage.setScene(scene);

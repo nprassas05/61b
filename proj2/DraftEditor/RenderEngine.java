@@ -233,4 +233,21 @@ public class RenderEngine {
 
 		moveCursor(runner, (int) clickedX);
 	}
+
+	/* increase or decrease the font size of the text by the given change
+	   amount.  A negative number would be provided by the Editor class
+	   in the case of decreasing the font size */
+	public void resize(int changeAmount) {
+		fontSize += changeAmount;
+
+		for (Text t: textBuffer) {
+			t.setFont(Font.font(fontName, fontSize));
+		}
+
+		arbitraryText.setFont(Font.font(fontName, fontSize));
+		lineHeight = (int) arbitraryText.getLayoutBounds().getHeight();
+		cursor.setHeight(arbitraryText.getLayoutBounds().getHeight());
+
+		render();
+	}
 }

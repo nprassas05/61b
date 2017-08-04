@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import javafx.scene.text.Text;
 
 /**
  * This program copies all of the text in one file to a new file. The first command line argument

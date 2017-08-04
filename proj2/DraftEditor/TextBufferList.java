@@ -129,7 +129,7 @@ public class TextBufferList implements Iterable<Text> {
 		}
 
 		public boolean hasNext() {
-			return runner.next != null;
+			return runner != null;
 		}
 	}
 
