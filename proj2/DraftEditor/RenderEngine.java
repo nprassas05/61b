@@ -194,7 +194,10 @@ public class RenderEngine {
 	public void adjustCursor() {
 		TextBufferList.TextNode currNode = textBuffer.getCurrentNode();
 
-		if (currNode.text.getText().charAt(0) == '\n') {
+		if (textBuffer.size() <= 0) {
+			cursor.setX(5);
+			cursor.setY(5);
+		} else if (currNode.text.getText().charAt(0) == '\n') {
 			cursor.setX(5);
 			cursor.setY(currNode.getY() + lineHeight);
 		} else {
