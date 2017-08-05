@@ -194,7 +194,7 @@ public class RenderEngine {
 	public void adjustCursor() {
 		TextBufferList.TextNode currNode = textBuffer.getCurrentNode();
 
-		if (textBuffer.size() <= 0) {
+		if (textBuffer.size() <= 0 || currNode == textBuffer.frontSentinel) {
 			cursor.setX(5);
 			cursor.setY(5);
 		} else if (currNode.text.getText().charAt(0) == '\n') {

@@ -1,4 +1,5 @@
 import javafx.application.Application;
+import javafx.application.Application.Parameters;
 import javafx.event.EventHandler;
 import javafx.geometry.VPos;
 import javafx.scene.Group;
@@ -11,6 +12,8 @@ import javafx.scene.text.Text;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.scene.shape.Rectangle;
+
+import java.util.List;
 
 public class Temp extends Application {
     Group root;
@@ -42,9 +45,6 @@ public class Temp extends Application {
         private String fontName = "Verdana";
 
         KeyEventHandler(final Group root, int windowWidth, int windowHeight) {
-            textBuffer = new TextBufferList();
-            renderEngine = new RenderEngine(textBuffer, cursor);
-
             arbitraryText.setFont(Font.font(fontName, fontSize));
         }
 
@@ -59,8 +59,10 @@ public class Temp extends Application {
         		} else if (code == KeyCode.MINUS && fontSize >= 8) {
         			fontSize -= 4;
         			renderEngine.resize(-4);
-        		}
-
+        		} else if (code == KeyCode.S) {
+                    FileHandler.saveFile(textBuffer, fileName);
+                }
+                
         	} else if (keyEvent.getEventType() == KeyEvent.KEY_TYPED) {
                 // Use the KEY_TYPED event rather than KEY_PRESSED for letter keys, because with
                 // the KEY_TYPED event, javafx handles the "Shift" key and associated
@@ -122,7 +124,6 @@ public class Temp extends Application {
             // generated anytime the mouse is pressed and released on the same JavaFX node.
             double mousePressedX = mouseEvent.getX();
             double mousePressedY = mouseEvent.getY();
-
             renderEngine.handleMouseClick(mousePressedX, mousePressedY);
         }
     }
@@ -157,6 +158,11 @@ public class Temp extends Application {
 
         /* render the text in the file being opened if that file
            was existant beforehand */
+        List<String> params = getParameters().getRaw();
+        fileName = params.get(0);
+        textBuffer = FileHandler.formListFromFile(fileName, root);
+        textBuffer.setCurrentNode(textBuffer.frontSentinel);
+        renderEngine = new RenderEngine(textBuffer, cursor);
         renderEngine.render();
 
         // This is boilerplate, necessary to setup the window where things are displayed.
@@ -165,6 +171,11 @@ public class Temp extends Application {
     }
 
     public static void main(String[] args) {
+        if (args.length < 1) {
+            System.out.println("Error: Please provide one argument for file to edit");
+            System.exit(1);
+        }
+
         launch(args);
     }
 }

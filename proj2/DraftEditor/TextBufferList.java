@@ -44,7 +44,7 @@ public class TextBufferList implements Iterable<Text> {
 	}
 
 	/* frontSentinel node for convenience */
-	private TextNode frontSentinel;
+	public TextNode frontSentinel;
 
 	/* textnode before the cursor, where text will be inserted after */
 	private TextNode currentNode;
