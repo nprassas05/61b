@@ -136,7 +136,7 @@ public class Temp extends Application {
             double mousePressedX = mouseEvent.getX();
             double mousePressedY = mouseEvent.getY();
             System.out.println("mouse y pos clicked = " + (mousePressedY - textRoot.getLayoutY()));
-            renderEngine.handleMouseClick(mousePressedX - textRoot.getLayoutY(), mousePressedY);
+            renderEngine.handleMouseClick(mousePressedX, mousePressedY - textRoot.getLayoutY());
         }
     }
 

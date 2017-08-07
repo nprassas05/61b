@@ -117,6 +117,9 @@ public class RenderEngine {
 		// 490 accounts for the 5 pixel vertical margin on top and bottom, 500 - (2 * 5)
 		scrollBar.setMax(lineHeight * lastNodeOnEachLine.size() - 490);
 		//System.out.println("number of lines in file = " + lastNodeOnEachLine.size() + ", lineHeight = " + lineHeight);
+
+		makeCursorVisible();
+
 	}
 
 	public HashMap<Text, Integer> getWordLengthMap() {
@@ -193,6 +196,9 @@ public class RenderEngine {
 		int currentX = (int) cursor.getX();
 		TextBufferList.TextNode runner = lastNodeOnEachLine.get(currentLine - 1);
 		moveCursor(runner, currentX);
+
+		/// 
+		makeCursorVisible();
 	}
 
 	/* down arrow key */
@@ -204,6 +210,9 @@ public class RenderEngine {
 		int currentX = (int) cursor.getX();
 		TextBufferList.TextNode runner = lastNodeOnEachLine.get(currentLine + 1);
 		moveCursor(runner, currentX);
+
+		///
+		makeCursorVisible();
 	}
 
 	/* adjust the cursor to be positioned correctly
@@ -234,7 +243,7 @@ public class RenderEngine {
 	public int getClosestLineNum(double yPos) {
 		numLinesCovered = (int) (-(textRoot.getLayoutY() + 5) / lineHeight);
 
-		int lineNum = Math.abs((int) (yPos - 5) / lineHeight) + numLinesCovered;
+		int lineNum = Math.abs((int) (yPos - 5) / lineHeight);
 		return lineNum < numberOfLines ? lineNum : numberOfLines - 1;
 	}
 
@@ -267,5 +276,24 @@ public class RenderEngine {
 		cursor.setHeight(arbitraryText.getLayoutBounds().getHeight());
 
 		render();
+	}
+
+	/* check if cursor is within the visible window */
+	public boolean cursorIsVisible() {
+		int cusorYPos = (int) (cursor.getY() + textRoot.getLayoutY());
+		if (cusorYPos > 495 || cusorYPos < 5) {
+			return false;
+		}
+		return true;
+	}
+
+	/* cursor check variation, won't keep both */
+	public void makeCursorVisible() {
+		int cursorYPos = (int) (cursor.getY() + textRoot.getLayoutY());
+		if (cursorYPos < 5) {
+			scrollBar.setValue(cursor.getY() - 5);
+		} else if (cursorYPos > 495) {
+			scrollBar.setValue(cursor.getY() - 480);
+		}
 	}
 }
