@@ -12,11 +12,17 @@ import javafx.scene.text.Text;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.control.ScrollBar;
+import javafx.geometry.Orientation;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 
 import java.util.List;
 
 public class Temp extends Application {
     Group root;
+    Group textRoot;
+
     TextBufferList textBuffer;
 
     /* the name of file being edited */
@@ -61,6 +67,11 @@ public class Temp extends Application {
         			renderEngine.resize(-4);
         		} else if (code == KeyCode.S) {
                     FileHandler.saveFile(textBuffer, fileName);
+                } else if (code == KeyCode.G) {
+                    System.out.println("GGGG");
+                    textRoot.setLayoutY(textRoot.getLayoutY() - 30);
+                } else if (code == KeyCode.B) {
+                    textRoot.setLayoutY(textRoot.getLayoutY() + 30);
                 }
                 
         	} else if (keyEvent.getEventType() == KeyEvent.KEY_TYPED) {
@@ -85,7 +96,7 @@ public class Temp extends Application {
                     /* add the text object to buffer as well as the root node */
                     textBuffer.insert(t);
                     renderEngine.render();
-                    root.getChildren().add(t);
+                    textRoot.getChildren().add(t);
 
 
                     keyEvent.consume();
@@ -98,7 +109,7 @@ public class Temp extends Application {
                 
                 if (code == KeyCode.BACK_SPACE && textBuffer.size() > 0) {
                     Text deletedText = textBuffer.extractCurrentNode();
-                    root.getChildren().remove(deletedText);
+                    textRoot.getChildren().remove(deletedText);
                     renderEngine.render();
                 } else if (code == KeyCode.LEFT) {
                     renderEngine.leftArrow();
@@ -124,7 +135,8 @@ public class Temp extends Application {
             // generated anytime the mouse is pressed and released on the same JavaFX node.
             double mousePressedX = mouseEvent.getX();
             double mousePressedY = mouseEvent.getY();
-            renderEngine.handleMouseClick(mousePressedX, mousePressedY);
+            System.out.println("mouse y pos clicked = " + (mousePressedY - textRoot.getLayoutY()));
+            renderEngine.handleMouseClick(mousePressedX - textRoot.getLayoutY(), mousePressedY);
         }
     }
 
@@ -132,13 +144,16 @@ public class Temp extends Application {
     public void start(Stage primaryStage) {
         // Create a Node that will be the parent of all things displayed on the screen.
         root = new Group();
+        textRoot = new Group();
 
         /* create continuous blinking cursor event handler */
         cursor.setHeight(new Text("a").getLayoutBounds().getHeight());
         CursorBlinkEventHandler cursorBlinker = new CursorBlinkEventHandler(cursor);
 
         /* add the cursor to root so it can be displayed first */
-        root.getChildren().add(cursor);
+        textRoot.getChildren().add(cursor);
+
+        root.getChildren().add(textRoot);
 
         // The Scene represents the window: its height and width will be the height and width
         // of the window displayed.
@@ -156,14 +171,48 @@ public class Temp extends Application {
 
         primaryStage.setTitle("Editor");
 
+         // Make a vertical scroll bar on the right side of the screen.
+        ScrollBar scrollBar = new ScrollBar();
+        scrollBar.setOrientation(Orientation.VERTICAL);
+        // Set the height of the scroll bar so that it fills the whole window.
+        scrollBar.setPrefHeight(WINDOW_HEIGHT);
+        scrollBar.setLayoutX(500 - scrollBar.getLayoutBounds().getWidth());
+
+        // Set the range of the scroll bar.
+        scrollBar.setMin(0);
+        //scrollBar.setMax(5500);
+
+        /** When the scroll bar changes position, change the height of Josh. */
+        scrollBar.valueProperty().addListener(new ChangeListener<Number>() {
+            public void changed(
+                    ObservableValue<? extends Number> observableValue,
+                    Number oldValue,
+                    Number newValue) {
+                // newValue describes the value of the new position of the scroll bar. The numerical
+                // value of the position is based on the position of the scroll bar, and on the min
+                // and max we set above. For example, if the scroll bar is exactly in the middle of
+                // the scroll area, the position will be:
+                //      scroll minimum + (scroll maximum - scroll minimum) / 2
+                // Here, we can directly use the value of the scroll bar to set the height of Josh,
+                // because of how we set the minimum and maximum above.
+                textRoot.setLayoutY(textRoot.getLayoutY() - newValue.doubleValue() + oldValue.doubleValue());
+                System.out.println("layout y = " + textRoot.getLayoutY());
+            }
+        });
+
+        // Add the scroll bar to the scene graph, so that it appears on the screen.
+        root.getChildren().add(scrollBar);
+
         /* render the text in the file being opened if that file
            was existant beforehand */
         List<String> params = getParameters().getRaw();
         fileName = params.get(0);
-        textBuffer = FileHandler.formListFromFile(fileName, root);
+        textBuffer = FileHandler.formListFromFile(fileName, textRoot);
         textBuffer.setCurrentNode(textBuffer.frontSentinel);
-        renderEngine = new RenderEngine(textBuffer, cursor);
+        renderEngine = new RenderEngine(textBuffer, cursor, scrollBar, textRoot);
         renderEngine.render();
+
+        System.out.println("layout y = " + textRoot.getLayoutY());
 
         // This is boilerplate, necessary to setup the window where things are displayed.
         primaryStage.setScene(scene);

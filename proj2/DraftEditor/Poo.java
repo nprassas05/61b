@@ -9,7 +9,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.scene.control.ScrollBar;
 import javafx.scene.shape.Rectangle;
 
 import java.util.Map;
@@ -24,12 +23,9 @@ public class RenderEngine {
 	   as well as the length of each word corresponding to that starting letter */
 	private Map<Text, Integer> wordLengthMap;
 	private Rectangle cursor;
-	ScrollBar scrollBar;
-	Group textRoot;
 	ArrayList<TextBufferList.TextNode> lastNodeOnEachLine = new ArrayList<>();
 	int currentLine = 0;
 	int numberOfLines = 1;
-	int numLinesCovered = 0;  // number of lines hidden from the top by scroll bar
 
 	 /** The font and size of text to display on the screen */
     private int fontSize = 12;
@@ -48,15 +44,6 @@ public class RenderEngine {
 	public RenderEngine(TextBufferList tb, Rectangle r) {
 		textBuffer = tb;
 		cursor = r;
-		wordLengthMap = new HashMap<>();
-		arbitraryText.setFont(Font.font(fontName, fontSize));
-	}
-
-	public RenderEngine(TextBufferList tb, Rectangle r, ScrollBar s, Group root) {
-		textBuffer = tb;
-		cursor = r;
-		scrollBar = s;
-		textRoot = root;
 		wordLengthMap = new HashMap<>();
 		arbitraryText.setFont(Font.font(fontName, fontSize));
 	}
@@ -81,7 +68,7 @@ public class RenderEngine {
 
 				/* check if word length is too long to fit on current line */
 				/* for now assuming we always have a 500 by 500 pixel window, but this will change */
-				if (length + currentX > 495 - scrollBar.getLayoutBounds().getWidth()) {
+				if (length + currentX > 495) {
 					currentX = 5;
 					currentY += lineHeight; /////////// @@@@@@@@
 					lastNodeOnEachLine.add(runner.prev);
@@ -113,10 +100,6 @@ public class RenderEngine {
 		}
 
 		adjustCursor();
-
-		// 490 accounts for the 5 pixel vertical margin on top and bottom, 500 - (2 * 5)
-		scrollBar.setMax(lineHeight * lastNodeOnEachLine.size() - 490);
-		//System.out.println("number of lines in file = " + lastNodeOnEachLine.size() + ", lineHeight = " + lineHeight);
 	}
 
 	public HashMap<Text, Integer> getWordLengthMap() {
@@ -232,9 +215,8 @@ public class RenderEngine {
 
 	/* get the closest line according to a y position */
 	public int getClosestLineNum(double yPos) {
-		numLinesCovered = (int) (-(textRoot.getLayoutY() + 5) / lineHeight);
+		int lineNum = Math.abs((int) (yPos - 5) / lineHeight);
 
-		int lineNum = Math.abs((int) (yPos - 5) / lineHeight) + numLinesCovered;
 		return lineNum < numberOfLines ? lineNum : numberOfLines - 1;
 	}
 
@@ -246,7 +228,7 @@ public class RenderEngine {
 	/* change the cursor to be closest to where the user mouse clicked */
 	public void handleMouseClick(double clickedX, double clickedY) {
 		int lineNum = getClosestLineNum(clickedY);
-		System.out.println("line number = " + lineNum);
+		System.out.println(lineNum);
 		TextBufferList.TextNode runner = lastNodeOnEachLine.get(lineNum);
 
 		moveCursor(runner, (int) clickedX);
