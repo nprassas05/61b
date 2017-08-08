@@ -29,7 +29,6 @@ public class RenderEngine {
 	ArrayList<TextBufferList.TextNode> lastNodeOnEachLine = new ArrayList<>();
 	int currentLine = 0;
 	int numberOfLines = 1;
-	int numLinesCovered = 0;  // number of lines hidden from the top by scroll bar
 
 	 /** The font and size of text to display on the screen */
     private int fontSize = 12;
@@ -38,12 +37,6 @@ public class RenderEngine {
 	/* Text object simply used for resizing certain things */
     Text arbitraryText = new Text("a");
     int lineHeight = (int) arbitraryText.getLayoutBounds().getHeight();
-
-	public RenderEngine(TextBufferList tb) {
-		textBuffer = tb;
-		wordLengthMap = new HashMap<>();
-		arbitraryText.setFont(Font.font(fontName, fontSize));
-	}
 
 	public RenderEngine(TextBufferList tb, Rectangle r) {
 		textBuffer = tb;
@@ -63,7 +56,7 @@ public class RenderEngine {
 
 	public void render() {
 		int currentX = 5;
-		int currentY = 5;
+		int currentY = 0;
 		numberOfLines = 1;
 
 		/* get the starting point and length of each word in text, storing
@@ -115,11 +108,11 @@ public class RenderEngine {
 		adjustCursor();
 
 		// 490 accounts for the 5 pixel vertical margin on top and bottom, 500 - (2 * 5)
-		scrollBar.setMax(lineHeight * lastNodeOnEachLine.size() - 490);
+		// now just 500 once I realized that top and bottom margins are ZERO
+		scrollBar.setMax(lineHeight * lastNodeOnEachLine.size() - 500);
 		//System.out.println("number of lines in file = " + lastNodeOnEachLine.size() + ", lineHeight = " + lineHeight);
 
 		makeCursorVisible();
-
 	}
 
 	public HashMap<Text, Integer> getWordLengthMap() {
@@ -222,7 +215,7 @@ public class RenderEngine {
 
 		if (textBuffer.size() <= 0 || currNode == textBuffer.frontSentinel) {
 			cursor.setX(5);
-			cursor.setY(5);
+			cursor.setY(0);
 		} else if (currNode.text.getText().charAt(0) == '\n') {
 			cursor.setX(5);
 			cursor.setY(currNode.getY() + lineHeight);
@@ -241,9 +234,7 @@ public class RenderEngine {
 
 	/* get the closest line according to a y position */
 	public int getClosestLineNum(double yPos) {
-		numLinesCovered = (int) (-(textRoot.getLayoutY() + 5) / lineHeight);
-
-		int lineNum = Math.abs((int) (yPos - 5) / lineHeight);
+		int lineNum = Math.abs((int) yPos / lineHeight);
 		return lineNum < numberOfLines ? lineNum : numberOfLines - 1;
 	}
 
@@ -278,22 +269,13 @@ public class RenderEngine {
 		render();
 	}
 
-	/* check if cursor is within the visible window */
-	public boolean cursorIsVisible() {
-		int cusorYPos = (int) (cursor.getY() + textRoot.getLayoutY());
-		if (cusorYPos > 495 || cusorYPos < 5) {
-			return false;
-		}
-		return true;
-	}
-
 	/* cursor check variation, won't keep both */
 	public void makeCursorVisible() {
 		int cursorYPos = (int) (cursor.getY() + textRoot.getLayoutY());
-		if (cursorYPos < 5) {
-			scrollBar.setValue(cursor.getY() - 5);
-		} else if (cursorYPos > 495) {
-			scrollBar.setValue(cursor.getY() - 480);
+		if (cursorYPos <= 0) {
+			scrollBar.setValue(cursor.getY());
+		} else if (cursorYPos > 485) { // if we are at all covering the last line
+			scrollBar.setValue(cursor.getY() - 485); // cursor.gety() - windowHeight + lineHeight
 		}
 	}
 }

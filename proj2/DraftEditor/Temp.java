@@ -29,7 +29,7 @@ public class Temp extends Application {
     private String fileName;
 
     /* cursor will start at coordinates (5, 5) and have a width of 1 pixel, the 20 will change eventually */
-    private final Rectangle cursor = new Rectangle(5.0, 5.0, 1, 20);
+    private final Rectangle cursor = new Rectangle(5.0, 0.0, 1, 20);
 
     /* keep an internal text rendering engine */
     private RenderEngine renderEngine;
