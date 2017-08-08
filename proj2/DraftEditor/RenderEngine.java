@@ -30,6 +30,12 @@ public class RenderEngine {
 	int currentLine = 0;
 	int numberOfLines = 1;
 
+	/* track the dimensions and margins of our visible window */
+	private int windowHeight = 500;
+	private int windowWidth = 500;
+	private int marginLeft = 5;
+	private int marginRight = 5;
+
 	 /** The font and size of text to display on the screen */
     private int fontSize = 12;
     private String fontName = "Verdana";
@@ -59,6 +65,8 @@ public class RenderEngine {
 		int currentY = 0;
 		numberOfLines = 1;
 
+		double maxPositionRight = windowWidth - marginRight - scrollBar.getLayoutBounds().getWidth();
+
 		/* get the starting point and length of each word in text, storing
 		   the result in wordLengthMap */
 		wordLengthMap = getWordLengthMap();
@@ -74,7 +82,7 @@ public class RenderEngine {
 
 				/* check if word length is too long to fit on current line */
 				/* for now assuming we always have a 500 by 500 pixel window, but this will change */
-				if (length + currentX > 495 - scrollBar.getLayoutBounds().getWidth()) {
+				if (length + currentX > maxPositionRight) {
 					currentX = 5;
 					currentY += lineHeight; /////////// @@@@@@@@
 					lastNodeOnEachLine.add(runner.prev);
@@ -109,7 +117,7 @@ public class RenderEngine {
 
 		// 490 accounts for the 5 pixel vertical margin on top and bottom, 500 - (2 * 5)
 		// now just 500 once I realized that top and bottom margins are ZERO
-		scrollBar.setMax(lineHeight * lastNodeOnEachLine.size() - 500);
+		scrollBar.setMax(lineHeight * lastNodeOnEachLine.size() - windowHeight);
 		//System.out.println("number of lines in file = " + lastNodeOnEachLine.size() + ", lineHeight = " + lineHeight);
 
 		makeCursorVisible();
@@ -274,8 +282,20 @@ public class RenderEngine {
 		int cursorYPos = (int) (cursor.getY() + textRoot.getLayoutY());
 		if (cursorYPos <= 0) {
 			scrollBar.setValue(cursor.getY());
-		} else if (cursorYPos > 485) { // if we are at all covering the last line
-			scrollBar.setValue(cursor.getY() - 485); // cursor.gety() - windowHeight + lineHeight
+		} else if (cursorYPos >  windowHeight - lineHeight) { // if we are at all covering the last line
+			scrollBar.setValue(cursor.getY() - windowHeight + lineHeight); // cursor.gety() - windowHeight + lineHeight
 		}
+	}
+
+	/* re-render after changing either the width or height of the window */
+	public void setWindowHeight(int h) {
+		windowHeight = h;
+		render();
+	}
+
+	public void setWindowWidth(int w) {
+		windowWidth = w;
+		scrollBar.setLayoutX(windowWidth - scrollBar.getLayoutBounds().getWidth());
+		render();
 	}
 }

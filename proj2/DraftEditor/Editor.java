@@ -1,4 +1,5 @@
 import javafx.application.Application;
+import javafx.application.Application.Parameters;
 import javafx.event.EventHandler;
 import javafx.geometry.VPos;
 import javafx.scene.Group;
@@ -11,25 +12,36 @@ import javafx.scene.text.Text;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.control.ScrollBar;
+import javafx.geometry.Orientation;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 
-public class Temp extends Application {
+import java.util.List;
+
+public class Editor extends Application {
     Group root;
+    Group textRoot;
+
     TextBufferList textBuffer;
 
+    /* the name of file being edited */
+    private String fileName;
+
     /* cursor will start at coordinates (5, 5) and have a width of 1 pixel, the 20 will change eventually */
-    private final Rectangle cursor = new Rectangle(5.0, 5.0, 1, 20);
+    private final Rectangle cursor = new Rectangle(5.0, 0.0, 1, 20);
 
     /* keep an internal text rendering engine */
     private RenderEngine renderEngine;
 
-    private static final int WINDOW_WIDTH = 500;
-    private static final int WINDOW_HEIGHT = 500;
+    private static int WINDOW_WIDTH = 500;
+    private static int WINDOW_HEIGHT = 500;
 
     /** An EventHandler to handle keys that get pressed. */
     private class KeyEventHandler implements EventHandler<KeyEvent> {
         private static final int STARTING_FONT_SIZE = 12;
         private static final int STARTING_TEXT_POSITION_X = 5;
-        private static final int STARTING_TEXT_POSITION_Y = 5;
+        private static final int STARTING_TEXT_POSITION_Y = 0;
 
         /* Text object simply used for resizing certain things */
         Text arbitraryText = new Text("a");
@@ -39,15 +51,30 @@ public class Temp extends Application {
         private String fontName = "Verdana";
 
         KeyEventHandler(final Group root, int windowWidth, int windowHeight) {
-            textBuffer = new TextBufferList();
-            renderEngine = new RenderEngine(textBuffer, cursor);
-
             arbitraryText.setFont(Font.font(fontName, fontSize));
         }
 
         @Override
         public void handle(KeyEvent keyEvent) {
-            if (keyEvent.getEventType() == KeyEvent.KEY_TYPED) {
+        	if (keyEvent.isShortcutDown()) {
+        		KeyCode code = keyEvent.getCode();
+        		
+        		if (code == KeyCode.EQUALS || code == KeyCode.PLUS) {
+        			fontSize += 4;
+        			renderEngine.resize(4);
+        		} else if (code == KeyCode.MINUS && fontSize >= 8) {
+        			fontSize -= 4;
+        			renderEngine.resize(-4);
+        		} else if (code == KeyCode.S) {
+                    FileHandler.saveFile(textBuffer, fileName);
+                } else if (code == KeyCode.G) {
+                    System.out.println("GGGG");
+                    textRoot.setLayoutY(textRoot.getLayoutY() - 30);
+                } else if (code == KeyCode.B) {
+                    textRoot.setLayoutY(textRoot.getLayoutY() + 30);
+                }
+                
+        	} else if (keyEvent.getEventType() == KeyEvent.KEY_TYPED) {
                 // Use the KEY_TYPED event rather than KEY_PRESSED for letter keys, because with
                 // the KEY_TYPED event, javafx handles the "Shift" key and associated
                 // capitalization.
@@ -69,7 +96,7 @@ public class Temp extends Application {
                     /* add the text object to buffer as well as the root node */
                     textBuffer.insert(t);
                     renderEngine.render();
-                    root.getChildren().add(t);
+                    textRoot.getChildren().add(t);
 
 
                     keyEvent.consume();
@@ -82,7 +109,7 @@ public class Temp extends Application {
                 
                 if (code == KeyCode.BACK_SPACE && textBuffer.size() > 0) {
                     Text deletedText = textBuffer.extractCurrentNode();
-                    root.getChildren().remove(deletedText);
+                    textRoot.getChildren().remove(deletedText);
                     renderEngine.render();
                 } else if (code == KeyCode.LEFT) {
                     renderEngine.leftArrow();
@@ -108,32 +135,85 @@ public class Temp extends Application {
             // generated anytime the mouse is pressed and released on the same JavaFX node.
             double mousePressedX = mouseEvent.getX();
             double mousePressedY = mouseEvent.getY();
-
-            renderEngine.handleMouseClick(mousePressedX, mousePressedY);
+            System.out.println("mouse y pos clicked = " + (mousePressedY - textRoot.getLayoutY()));
+            renderEngine.handleMouseClick(mousePressedX, mousePressedY - textRoot.getLayoutY());
         }
+    }
+
+    private ScrollBar getNewScrollBar() {
+         // Make a vertical scroll bar on the right side of the screen.
+        ScrollBar scrollBar = new ScrollBar();
+        scrollBar.setOrientation(Orientation.VERTICAL);
+        // Set the height of the scroll bar so that it fills the whole window.
+        scrollBar.setPrefHeight(WINDOW_HEIGHT);
+        scrollBar.setLayoutX(WINDOW_WIDTH - scrollBar.getLayoutBounds().getWidth());
+
+        // Set the range of the scroll bar.
+        scrollBar.setMin(0);
+        //scrollBar.setMax(5500);
+
+        /** When the scroll bar changes position, change the height of Josh. */
+        scrollBar.valueProperty().addListener(new ChangeListener<Number>() {
+            public void changed(
+                    ObservableValue<? extends Number> observableValue,
+                    Number oldValue,
+                    Number newValue) {
+
+                textRoot.setLayoutY(textRoot.getLayoutY() - newValue.doubleValue() + oldValue.doubleValue());
+                System.out.println("layout y = " + textRoot.getLayoutY());
+            }
+        });
+
+        return scrollBar;
+    }
+
+    private Scene getNewScene() {
+        Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT, Color.WHITE);
+
+        scene.widthProperty().addListener(new ChangeListener<Number>() {
+            @Override public void changed(
+                    ObservableValue<? extends Number> observableValue,
+                    Number oldScreenWidth,
+                    Number newScreenWidth) {
+                // Re-compute Allen's width.
+                int newAllenWidth = newScreenWidth.intValue();
+                renderEngine.setWindowWidth(newAllenWidth);
+            }
+        });
+
+        scene.heightProperty().addListener(new ChangeListener<Number>() {
+            @Override public void changed(
+                    ObservableValue<? extends Number> observableValue,
+                    Number oldScreenHeight,
+                    Number newScreenHeight) {
+                int newAllenHeight = newScreenHeight.intValue();
+                renderEngine.setWindowHeight(newAllenHeight);
+            }
+        });
+
+        return scene;
     }
 
     @Override
     public void start(Stage primaryStage) {
         // Create a Node that will be the parent of all things displayed on the screen.
         root = new Group();
+        textRoot = new Group();
 
         /* create continuous blinking cursor event handler */
         cursor.setHeight(new Text("a").getLayoutBounds().getHeight());
         CursorBlinkEventHandler cursorBlinker = new CursorBlinkEventHandler(cursor);
 
-        /* add the cursor to root so it can be displayed first */
-        root.getChildren().add(cursor);
-
         // The Scene represents the window: its height and width will be the height and width
         // of the window displayed.
-        Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT, Color.WHITE);
+        Scene scene = getNewScene();
 
         // To get information about what keys the user is pressing, create an EventHandler.
         // EventHandler subclasses must override the "handle" function, which will be called
         // by javafx.
         EventHandler<KeyEvent> keyEventHandler =
                 new KeyEventHandler(root, WINDOW_WIDTH, WINDOW_HEIGHT);
+
         // Register the event handler to be called for all KEY_PRESSED and KEY_TYPED events.
         scene.setOnKeyTyped(keyEventHandler);
         scene.setOnKeyPressed(keyEventHandler);
@@ -141,12 +221,35 @@ public class Temp extends Application {
 
         primaryStage.setTitle("Editor");
 
+         // Make a vertical scroll bar on the right side of the screen.
+        ScrollBar scrollBar = getNewScrollBar();
+
+        // add nodes to their parents
+        textRoot.getChildren().add(cursor);
+        root.getChildren().addAll(textRoot, scrollBar);
+
+        /* render the text in the file being opened if that file
+           was existant beforehand */
+        List<String> params = getParameters().getRaw();
+        fileName = params.get(0);
+        textBuffer = FileHandler.formListFromFile(fileName, textRoot);
+        
+        renderEngine = new RenderEngine(textBuffer, cursor, scrollBar, textRoot);
+        renderEngine.render();
+
+        System.out.println("layout y = " + textRoot.getLayoutY());
+
         // This is boilerplate, necessary to setup the window where things are displayed.
         primaryStage.setScene(scene);
         primaryStage.show();
     }
 
     public static void main(String[] args) {
+        if (args.length < 1) {
+            System.out.println("Error: Please provide one argument for file to edit");
+            System.exit(1);
+        }
+
         launch(args);
     }
 }

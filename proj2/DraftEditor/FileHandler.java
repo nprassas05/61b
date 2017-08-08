@@ -28,6 +28,8 @@ public class FileHandler {
 				root.getChildren().add(t);
 			}
 
+			textBuffer.setCurrentNode(textBuffer.frontSentinel);
+			
 			reader.close();
 			return textBuffer;
 
