@@ -68,7 +68,8 @@ public class RenderEngine {
 
 	/* insert text object into linked list, textRoot, urBuffer, and re-render */
 	public void insertText(Text t) {
-		textBuffer.insert(t);
+		TextBufferList.TextNode tNode = textBuffer.new TextNode(t);
+		textBuffer.insert(tNode);
 		urBuffer.push(new Move(t, MoveType.INSERT));
 
 		render();

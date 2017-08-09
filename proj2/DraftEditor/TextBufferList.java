@@ -18,6 +18,10 @@ public class TextBufferList implements Iterable<Text> {
 		public TextNode next;
 		public TextNode prev;
 
+		public TextNode(Text t) {
+			this(t, null, null);
+		}
+
 		public TextNode(Text t, TextNode n, TextNode p) {
 			text = t;
 			next = n;
@@ -70,6 +74,18 @@ public class TextBufferList implements Iterable<Text> {
 		++size;
 
 		nodeMap.put(text, t);
+	}
+
+	/* overloaded insert method, inserting a created node as opposed
+	 * to text objects
+	 */
+	public void insert(TextNode tNode) {
+		tNode.next = currentNode.next;
+		tNode.prev = currentNode;
+
+		currentNode.next = tNode;
+		currentNode = tNode;
+		++size;
 	}
 
 	/* remove and return the current node in the list */
