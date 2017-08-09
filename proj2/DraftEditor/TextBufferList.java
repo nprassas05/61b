@@ -1,13 +1,19 @@
 import javafx.scene.text.Text;
 import javafx.scene.shape.Rectangle;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.HashMap;
 
 public class TextBufferList implements Iterable<Text> {
 	private int size;
+	
+	/* test, keep a hashmap for quick retrieval of a node */
+	public Map<Text, TextNode> nodeMap = new HashMap<>();
 
 	/* internal linked list nodes, which will be text objects in this case */
 	public class TextNode {
 		public Text text;
+		public boolean deleted = false;
 
 		public TextNode next;
 		public TextNode prev;
@@ -62,6 +68,8 @@ public class TextBufferList implements Iterable<Text> {
 		currentNode.next = t;
 		currentNode = t;
 		++size;
+
+		nodeMap.put(text, t);
 	}
 
 	/* remove and return the current node in the list */

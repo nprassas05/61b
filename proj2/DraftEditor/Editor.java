@@ -67,13 +67,11 @@ public class Editor extends Application {
         			renderEngine.resize(-4);
         		} else if (code == KeyCode.S) {
                     FileHandler.saveFile(textBuffer, fileName);
-                } else if (code == KeyCode.G) {
-                    System.out.println("GGGG");
-                    textRoot.setLayoutY(textRoot.getLayoutY() - 30);
-                } else if (code == KeyCode.B) {
-                    textRoot.setLayoutY(textRoot.getLayoutY() + 30);
+                } else if (code == KeyCode.Z) { 
+                    renderEngine.undo();
+                } else if (code == KeyCode.Y) {
+
                 }
-                
         	} else if (keyEvent.getEventType() == KeyEvent.KEY_TYPED) {
                 // Use the KEY_TYPED event rather than KEY_PRESSED for letter keys, because with
                 // the KEY_TYPED event, javafx handles the "Shift" key and associated
@@ -94,11 +92,7 @@ public class Editor extends Application {
                     t.setFont(Font.font(fontName, fontSize));
 
                     /* add the text object to buffer as well as the root node */
-                    textBuffer.insert(t);
-                    renderEngine.render();
-                    textRoot.getChildren().add(t);
-
-
+                    renderEngine.insertText(t);
                     keyEvent.consume();
                 }
             } else if (keyEvent.getEventType() == KeyEvent.KEY_PRESSED) {

@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.HashSet;
 
 public class RenderEngine {
 	private TextBufferList textBuffer;
@@ -29,6 +30,10 @@ public class RenderEngine {
 	ArrayList<TextBufferList.TextNode> lastNodeOnEachLine = new ArrayList<>();
 	int currentLine = 0;
 	int numberOfLines = 1;
+
+	/* keep a stack for undoing and redoing operations */
+	private UndoRedoStack urStack;
+	Set<Text> deletedText = new HashSet<>();
 
 	/* track the dimensions and margins of our visible window */
 	private int windowHeight = 500;
@@ -57,7 +62,43 @@ public class RenderEngine {
 		scrollBar = s;
 		textRoot = root;
 		wordLengthMap = new HashMap<>();
+		urStack = new UndoRedoStack();
 		arbitraryText.setFont(Font.font(fontName, fontSize));
+	}
+
+	/* insert text object into linked list, textRoot, urStack, and re-render */
+	public void insertText(Text t) {
+		textBuffer.insert(t);
+		urStack.push(new Move(t, MoveType.INSERT));
+
+		render();
+		textRoot.getChildren().add(t);
+	}
+
+	public void deleteText() {
+
+	}
+
+	/* undo the previous insertion or deletion move */
+	public void undo() {
+		Move lastMove = urStack.pop();
+
+		if (lastMove == null) {	
+			return;
+		}
+
+		MoveType type = lastMove.getMoveType();
+		Text t = lastMove.getText();
+		TextBufferList.TextNode tNode = textBuffer.nodeMap.get(t);
+		textBuffer.setCurrentNode(tNode);
+
+		if (type == MoveType.INSERT) {
+			textRoot.getChildren().remove(t);
+			deletedText.add(t);
+		}
+
+		textBuffer.goLeft();
+		render();
 	}
 
 	public void render() {
@@ -77,6 +118,12 @@ public class RenderEngine {
 		TextBufferList.TextNode runner = textBuffer.getFirstNode();
 
 		while (runner != null) {
+			if (deletedText.contains(runner.text)) {
+				System.out.println(runner.text.getText() + "was deleted though");
+				runner = runner.next;
+				continue;
+			}
+
 			if (isStartOfWord(runner.text)) {
 				int length = wordLengthMap.get(runner.text);
 
@@ -129,6 +176,11 @@ public class RenderEngine {
 		Text currentWord = null;
 
 		while (runner != null) {
+			if (deletedText.contains(runner.text)) {
+				runner = runner.next;
+				continue;
+			}
+
 			if (runner.firstChar() != ' ' && runner.prev.firstChar() == ' ') {
 				currentWord = runner.text;
 				wordLengthMap.put(runner.text, runner.getWidth());
