@@ -70,7 +70,7 @@ public class Editor extends Application {
                 } else if (code == KeyCode.Z) { 
                     renderEngine.undo();
                 } else if (code == KeyCode.Y) {
-
+						 renderEngine.redo();
                 }
         	} else if (keyEvent.getEventType() == KeyEvent.KEY_TYPED) {
                 // Use the KEY_TYPED event rather than KEY_PRESSED for letter keys, because with

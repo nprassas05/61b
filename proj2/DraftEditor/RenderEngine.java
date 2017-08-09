@@ -32,7 +32,7 @@ public class RenderEngine {
 	int numberOfLines = 1;
 
 	/* keep a stack for undoing and redoing operations */
-	private UndoRedoStack urStack;
+	private UndoRedoBuffer urBuffer;
 	Set<Text> deletedText = new HashSet<>();
 
 	/* track the dimensions and margins of our visible window */
@@ -62,14 +62,14 @@ public class RenderEngine {
 		scrollBar = s;
 		textRoot = root;
 		wordLengthMap = new HashMap<>();
-		urStack = new UndoRedoStack();
+		urBuffer = new UndoRedoBuffer();
 		arbitraryText.setFont(Font.font(fontName, fontSize));
 	}
 
-	/* insert text object into linked list, textRoot, urStack, and re-render */
+	/* insert text object into linked list, textRoot, urBuffer, and re-render */
 	public void insertText(Text t) {
 		textBuffer.insert(t);
-		urStack.push(new Move(t, MoveType.INSERT));
+		urBuffer.push(new Move(t, MoveType.INSERT));
 
 		render();
 		textRoot.getChildren().add(t);
@@ -81,7 +81,7 @@ public class RenderEngine {
 
 	/* undo the previous insertion or deletion move */
 	public void undo() {
-		Move lastMove = urStack.pop();
+		Move lastMove = urBuffer.undo();
 
 		if (lastMove == null) {	
 			return;
@@ -89,7 +89,7 @@ public class RenderEngine {
 
 		MoveType type = lastMove.getMoveType();
 		Text t = lastMove.getText();
-		TextBufferList.TextNode tNode = textBuffer.nodeMap.get(t);
+		TextBufferList.TextNode tNode = textBuffer.supervisor(t);
 		textBuffer.setCurrentNode(tNode);
 
 		if (type == MoveType.INSERT) {
@@ -98,6 +98,29 @@ public class RenderEngine {
 		}
 
 		textBuffer.goLeft();
+		render();
+	}
+
+	public void redo() {
+		System.out.println("Doing a redo");
+		Move redoMove = urBuffer.redo();
+
+		if (redoMove == null) {
+			System.out.println("no redoable moves stored thooooo");
+			return;
+		} 
+
+		MoveType type = redoMove.getMoveType();
+		Text t = redoMove.getText();
+		TextBufferList.TextNode tNode = textBuffer.supervisor(t);
+		textBuffer.setCurrentNode(tNode.prev);
+
+		if (type == MoveType.INSERT) {
+			textRoot.getChildren().add(t);
+			deletedText.remove(t);
+		}
+		
+		textBuffer.goRight();
 		render();
 	}
 
@@ -119,7 +142,7 @@ public class RenderEngine {
 
 		while (runner != null) {
 			if (deletedText.contains(runner.text)) {
-				System.out.println(runner.text.getText() + "was deleted though");
+				//System.out.println(runner.text.getText() + "was deleted though");
 				runner = runner.next;
 				continue;
 			}

@@ -100,6 +100,11 @@ public class TextBufferList implements Iterable<Text> {
 		return frontSentinel.next;
 	}
 
+	/* return the node containing a particular text object */
+	public TextNode supervisor(Text t) {
+		return nodeMap.get(t);
+	}
+
 	/* move the current node one place to the left */
 	public void goLeft() {
 		if (currentNode != frontSentinel) {
