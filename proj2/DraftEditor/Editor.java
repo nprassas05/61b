@@ -102,9 +102,7 @@ public class Editor extends Application {
                 KeyCode code = keyEvent.getCode();
                 
                 if (code == KeyCode.BACK_SPACE && textBuffer.size() > 0) {
-                    Text deletedText = textBuffer.extractCurrentNode();
-                    textRoot.getChildren().remove(deletedText);
-                    renderEngine.render();
+                    renderEngine.deleteText();
                 } else if (code == KeyCode.LEFT) {
                     renderEngine.leftArrow();
                 } else if (code == KeyCode.RIGHT) {

@@ -70,14 +70,19 @@ public class RenderEngine {
 	public void insertText(Text t) {
 		TextBufferList.TextNode tNode = textBuffer.new TextNode(t);
 		textBuffer.insert(tNode);
-		urBuffer.push(new Move(t, MoveType.INSERT));
+		urBuffer.push(new Move(tNode, tNode.prev, MoveType.INSERT));
 
 		render();
 		textRoot.getChildren().add(t);
 	}
 
 	public void deleteText() {
-
+		TextBufferList.TextNode tNode = textBuffer.getCurrentNode();
+		urBuffer.push(new Move(tNode, tNode.prev, MoveType.DELETE));
+		Text deletedText = textBuffer.extractCurrentNode();
+		
+		textRoot.getChildren().remove(deletedText);
+		render();
 	}
 
 	/* undo the previous insertion or deletion move */
@@ -89,16 +94,23 @@ public class RenderEngine {
 		}
 
 		MoveType type = lastMove.getMoveType();
+		TextBufferList.TextNode tNode = lastMove.tNode;
+		
 		Text t = lastMove.getText();
-		TextBufferList.TextNode tNode = textBuffer.supervisor(t);
-		textBuffer.setCurrentNode(tNode);
+		//TextBufferList.TextNode tNode = textBuffer.supervisor(t);
+		//textBuffer.setCurrentNode(tNode);
 
 		if (type == MoveType.INSERT) {
+			textBuffer.setCurrentNode(tNode);
+			textBuffer.extractCurrentNode();
 			textRoot.getChildren().remove(t);
 			deletedText.add(t);
+		} else if (type == MoveType.DELETE) {
+			textBuffer.setCurrentNode(lastMove.markerNode);
+			textBuffer.insert(tNode);
+			textRoot.getChildren().add(t);
 		}
 
-		textBuffer.goLeft();
 		render();
 	}
 
@@ -113,15 +125,20 @@ public class RenderEngine {
 
 		MoveType type = redoMove.getMoveType();
 		Text t = redoMove.getText();
-		TextBufferList.TextNode tNode = textBuffer.supervisor(t);
-		textBuffer.setCurrentNode(tNode.prev);
+		TextBufferList.TextNode tNode = redoMove.tNode;
 
 		if (type == MoveType.INSERT) {
+			textBuffer.setCurrentNode(redoMove.markerNode);
+			textBuffer.insert(tNode);
 			textRoot.getChildren().add(t);
 			deletedText.remove(t);
+		} else if (type == MoveType.DELETE) {
+			textBuffer.setCurrentNode(tNode);
+			textBuffer.extractCurrentNode();
+			textRoot.getChildren().remove(t);
+			deletedText.add(t);
 		}
 		
-		textBuffer.goRight();
 		render();
 	}
 
@@ -142,12 +159,6 @@ public class RenderEngine {
 		TextBufferList.TextNode runner = textBuffer.getFirstNode();
 
 		while (runner != null) {
-			if (deletedText.contains(runner.text)) {
-				//System.out.println(runner.text.getText() + "was deleted though");
-				runner = runner.next;
-				continue;
-			}
-
 			if (isStartOfWord(runner.text)) {
 				int length = wordLengthMap.get(runner.text);
 
