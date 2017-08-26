@@ -7,12 +7,17 @@ import java.util.ArrayList;
  */
 public class ArrayHeap<T> {
 	private ArrayList<Node> contents = new ArrayList<Node>();
+	private int size = 0;
 
 	/**
 	 * Inserts an item with the given priority value. This is enqueue, or offer.
 	 */
 	public void insert(T item, double priority) {
+		int openIndex = size + 1;
+		setNode(openIndex, new Node(item, priority));
+		bubbleUp(openIndex);
 
+		++size;
 	}
 
 	/**
@@ -20,8 +25,7 @@ public class ArrayHeap<T> {
 	 * from the heap.
 	 */
 	public Node peek() {
-		// TODO Complete this method!
-		return null;
+		return getNode(1);
 	}
 
 	/**
@@ -29,8 +33,17 @@ public class ArrayHeap<T> {
 	 * the heap. This is dequeue, or poll.
 	 */
 	public Node removeMin() {
-		// TODO Complete this method!
-		return null;
+		int rootIndex = 1;
+		int rightMostBottomLeafIndex = size;
+
+		Node removeNode = getNode(rootIndex);
+		swap(rootIndex, rightMostBottomLeafIndex);
+		setNode(rightMostBottomLeafIndex, null);
+		bubbleDown(rootIndex);
+
+		--size;
+
+		return removeNode;
 	}
 
 	/**
@@ -40,6 +53,26 @@ public class ArrayHeap<T> {
 	 */
 	public void changePriority(T item, double priority) {
 		// TODO Complete this method!
+		changePriorityHelper(item, priority, 1);
+	}
+
+	public void changePriorityHelper(T item, double priority, int index) {
+		Node node = getNode(index);
+		if (node == null) return;
+
+		if (node.item().equals(item)) {
+			node.myPriority = priority;
+			int parentIndex = getParentOf(index);
+
+			if (min(index, parentIndex) == index) {
+				bubbleUp(index);
+			} else {
+				bubbleDown(index);
+			}
+		} else {
+			changePriorityHelper(item, priority, getLeftOf(index));
+			changePriorityHelper(item, priority, getRightOf(index));
+		}
 	}
 
 	/**
@@ -102,52 +135,75 @@ public class ArrayHeap<T> {
 	 * Returns the index of the node to the left of the node at i.
 	 */
 	private int getLeftOf(int i) {
-		// TODO Complete this method!
-		return 0;
+		return (2 * i);
 	}
 
 	/**
 	 * Returns the index of the node to the right of the node at i.
 	 */
 	private int getRightOf(int i) {
-		// TODO Complete this method!
-		return 0;
+		return (2 * i) + 1;
 	}
 
 	/**
 	 * Returns the index of the node that is the parent of the node at i.
 	 */
 	private int getParentOf(int i) {
-		// TODO Complete this method!
-		return 0;
+		return i / 2;
 	}
 
 	/**
 	 * Adds the given node as a left child of the node at the given index.
 	 */
 	private void setLeft(int index, Node n) {
-		// TODO Complete this method!
+		int leftChildIndex = getLeftOf(index);
+		contents.set(leftChildIndex, n);
 	}
 
 	/**
 	 * Adds the given node as the right child of the node at the given index.
 	 */
-	private void setRight(int inde, Node n) {
-		// TODO Complete this method!
+	private void setRight(int index, Node n) {
+		int rightChildIndex = getRightOf(index);
+		contents.set(rightChildIndex, n);
 	}
 
 	/**
 	 * Bubbles up the node currently at the given index.
 	 */
 	private void bubbleUp(int index) {
-		// TODO Complete this method!
+		int parentIndex = getParentOf(index);
+		int min = min(index, parentIndex);
+
+		while (min == index && parentIndex > 0) {
+			swap(index, parentIndex);
+			index = parentIndex;
+			parentIndex = getParentOf(index);
+			min = min(index, parentIndex);
+		}
 	}
 
 	/**
 	 * Bubbles down the node currently at the given index.
 	 */
-	private void bubbleDown(int inex) {
-		// TODO Complete this method!
+	private void bubbleDown(int index) {
+		int leftChild = getLeftOf(index);
+		int rightChild = getRightOf(index);
+
+		Node tempLeftNode = getNode(leftChild);
+
+		while (tempLeftNode != null && 
+			  (min(index, leftChild) == leftChild || 
+			   min(index, rightChild) == rightChild)) {
+
+			int swapIndex = min(leftChild, rightChild);
+			swap(index, swapIndex);
+
+			index = swapIndex;
+			leftChild = getLeftOf(index);
+			rightChild = getRightOf(index);
+		}
+
 	}
 
 	/**
@@ -204,6 +260,13 @@ public class ArrayHeap<T> {
 		heap.insert("c", 3);
 		heap.insert("d", 4);
 		System.out.println(heap);
-	}
 
+		System.out.println("removed " + heap.removeMin());
+		System.out.println("removed " + heap.removeMin());
+
+		System.out.println(heap);
+
+		heap.changePriority("h", 2);
+		System.out.println(heap);
+	}
 }

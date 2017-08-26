@@ -6,5 +6,8 @@ public class Hint {
             System.out.println(i + "th power: " + x);
             x = x * 256;
         }
+
+        int x2 = 256 * 256 * 256 * 256 - 1;
+        System.out.println(x2);
     }
 } 
