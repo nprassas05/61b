@@ -1,4 +1,3 @@
-
 import java.util.Observable;
 /** 
  *  @author Josh Hug
