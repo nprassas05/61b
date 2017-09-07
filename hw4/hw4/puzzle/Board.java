@@ -84,6 +84,7 @@ public class Board {
         return (item % N) - 1;
     }
 
+    /* check if board is in the finished order */
     public boolean isGoal() {
         for (int i = 0; i < N; ++i) {
             for (int j = 0; j < N; ++j) {
@@ -98,12 +99,15 @@ public class Board {
     }
 
     public boolean equals(Object y) {
+        if (y == null) {
+            return false;
+        }
+
         Board yBoard = (Board) y;
-        int[][] yTiles = yBoard.boardTiles;
 
         for (int i = 0; i < N; ++i) {
             for (int j = 0; j < N; ++j) {
-                if (boardTiles[i][j] != yTiles[i][j]) {
+                if (tileAt(i, j) != yBoard.tileAt(i, j)) {
                     return false;
                 }
             }
@@ -119,7 +123,7 @@ public class Board {
         s.append(N + "\n");
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                s.append(String.format("%2d ", tileAt(i,j)));
+                s.append(String.format("%1d ", tileAt(i,j)));
             }
             s.append("\n");
         }
