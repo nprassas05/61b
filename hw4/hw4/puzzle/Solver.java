@@ -1,8 +1,51 @@
 package hw4.puzzle;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.MinPQ;
+
+import java.util.Comparator;
+import java.util.ArrayList;
 
 public class Solver {
+    private class SearchNode implements Comparable<SearchNode> {
+        private Board board;
+        private int moves;
+        private int priority;
+        private SearchNode prev;
+
+        public SearchNode(Board b) {
+            board = b;
+        }
+
+        @Override
+        public int compareTo(SearchNode node) {
+            return 0;
+        }
+    }
+
+    SearchNode startNode;
+    MinPQ<SearchNode> pq;
+
+    public Solver(Board initial) {
+        pq = new MinPQ<>();
+        startNode = new SearchNode(initial);
+        pq.insert(startNode);
+        aStar();
+    }
+
+    /* solve the puzzle using the A* algorithm */
+    public void aStar() {
+
+    }
+
+    /* minimum number of moves to solve initial board */
+    public int moves() {
+        return 0;
+    }
+
+    public Iterable<Board> solution() {
+        return new ArrayList<>();
+    }
 
     // DO NOT MODIFY MAIN METHOD
     /* Uncomment this method once your Solver and Board classes are ready.
@@ -22,5 +65,4 @@ public class Solver {
             StdOut.println(board);
        }
     }*/
-
 }
