@@ -10,4 +10,4 @@ public class MagicWord13 {
         String magicWord = "oneweekleft";
         return magicWord;
     }
-} 
+}
