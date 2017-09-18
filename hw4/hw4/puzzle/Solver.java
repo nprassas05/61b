@@ -7,7 +7,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.ArrayList;
-
 public class Solver {
     private class SearchNode implements Comparable<SearchNode> {
         private Board board;

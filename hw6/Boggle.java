@@ -76,6 +76,7 @@ public class Boggle {
 		if (trieDict.contains(s) && !foundWords.contains(s)) {
 			//System.out.println("adding " + s);
 			wordPQ.insert(new SpecialString(s));
+			//if (wordPQ.size() > k) { wordPQ.delMax(); }
 			foundWords.add(s);
 		} 
 		
@@ -175,10 +176,10 @@ public class Boggle {
 	public static void main(String[] args) throws IOException {
 		Scanner input = new Scanner(System.in);
 
-		char[][] arr = new char[100][100];
-		for (int i = 0; i  <100; i++) {
+		char[][] arr = new char[50][50];
+		for (int i = 0; i  <50; i++) {
 			String s = input.nextLine();
-			for (int j = 0; j < 100; j++) {
+			for (int j = 0; j < 50; j++) {
 				arr[i][j] = s.charAt(j);
 			}
 		}
